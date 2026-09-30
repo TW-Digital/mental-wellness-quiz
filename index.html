@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mental Wellness Check-In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Itim&family=Mali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #fbf6ec;
+    --paper-dot: #efe5d2;
+    --card: #fffdf8;
+    --ink: #3a3129;
+    --ink-soft: #6f6358;
+    --ink-faint: #a3968a;
+    --line: #3a3129;
+    --hair: #e8dcc8;
+    --accent: #e8744f;
+    --accent-ink: #ffffff;
+    --accent-soft: #fde3d6;
+    --sel: #fff1c7;
+    --err: #c9443a;
+    /* สีประจำมิติ: soft = พื้นสติกเกอร์, strong = แท่งกราฟ */
+    --d1s: #e3dcfb; --d1: #8f7fe0;
+    --d2s: #d7ecf8; --d2: #4f9fcf;
+    --d3s: #dcefd6; --d3: #6fae62;
+    --d4s: #fcefc4; --d4: #dea321;
+    --d5s: #fbdde3; --d5: #de7189;
+    --d6s: #fde2cf; --d6: #e0874a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #221d19; --paper-dot: #2d2721; --card: #2b2520;
+      --ink: #f3ebe0; --ink-soft: #cbbfb1; --ink-faint: #8f8376;
+      --line: #f3ebe0; --hair: #40382f;
+      --accent-soft: #4a2e24; --sel: #4a3f22;
+      --d1s: #37324f; --d2s: #25384a; --d3s: #2c3d2a; --d4s: #463b1d; --d5s: #472b33; --d6s: #4a3322;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #221d19; --paper-dot: #2d2721; --card: #2b2520;
+    --ink: #f3ebe0; --ink-soft: #cbbfb1; --ink-faint: #8f8376;
+    --line: #f3ebe0; --hair: #40382f;
+    --accent-soft: #4a2e24; --sel: #4a3f22;
+    --d1s: #37324f; --d2s: #25384a; --d3s: #2c3d2a; --d4s: #463b1d; --d5s: #472b33; --d6s: #4a3322;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Mali", system-ui, sans-serif;
+    color: var(--ink);
+    background-color: var(--paper);
+    background-image: radial-gradient(var(--paper-dot) 1.2px, transparent 1.2px);
+    background-size: 22px 22px;
+    min-height: 100vh;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 600px; margin: 0 auto; padding: 28px 16px 56px; }
+  .screen { display: none; animation: pop .35s ease both; }
+  .screen.active { display: block; }
+  @keyframes pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .card {
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 22px;
+    padding: 28px 24px;
+    box-shadow: 4px 5px 0 var(--line);
+  }
+  .card + .card { margin-top: 20px; }
+  @media (max-width: 480px) { .card { padding: 22px 18px; } }
+
+  h1, h2, h3, .hand { font-family: "Itim", "Mali", sans-serif; font-weight: 400; }
+  h1 { font-size: clamp(30px, 7vw, 40px); line-height: 1.25; margin: 10px 0 4px; }
+  h2 { font-size: 23px; margin: 0 0 6px; line-height: 1.35; }
+  h3 { font-size: 20px; margin: 0 0 4px; line-height: 1.4; }
+  p { margin: 0 0 12px; }
+  .soft { color: var(--ink-soft); }
+  .faint { color: var(--ink-faint); font-size: 14px; }
+
+  /* ขีดเส้นใต้แบบวาดมือ */
+  .scribble { position: relative; display: inline-block; z-index: 0; }
+  .scribble svg { position: absolute; left: -4px; right: -4px; bottom: -6px; width: calc(100% + 8px); height: 14px; z-index: -1; }
+
+  .hero { position: relative; padding-top: 2px; }
+  .hero h1 { padding-right: 80px; }
+  .hero-art { position: absolute; top: -10px; right: -6px; width: 92px; height: 92px; animation: bob 4s ease-in-out infinite; }
+  @media (max-width: 480px) { .hero h1 { padding-right: 0; margin-top: 18px; } .hero-art { width: 72px; height: 72px; top: -12px; } }
+  @keyframes bob { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg) translateY(-3px); } }
+  .tape {
+    display: inline-block; font-size: 13px; font-weight: 600; padding: 3px 12px;
+    background: var(--d4s); border: 1.5px dashed var(--line); border-radius: 6px; transform: rotate(-2deg);
+  }
+
+  .facts { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 18px; }
+  .facts span { font-size: 14px; font-weight: 500; padding: 4px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--card); }
+
+  ul.list { list-style: none; padding: 0; margin: 4px 0 0; }
+  ul.list li { position: relative; padding: 5px 0 5px 28px; }
+  ul.list li::before { content: ""; position: absolute; left: 4px; top: 13px; width: 12px; height: 12px; border: 2px solid var(--accent); border-radius: 50%; }
+
+  .dims { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+  @media (max-width: 420px) { .dims { grid-template-columns: 1fr; } }
+  .dim { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; border: 1.5px solid var(--line); font-size: 15px; font-weight: 500; line-height: 1.35; }
+  .dim:nth-child(odd) { transform: rotate(-.6deg); }
+  .dim:nth-child(even) { transform: rotate(.6deg); }
+  .dim i { font-style: normal; font-size: 20px; }
+
+  .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0 4px; }
+  .scale div { text-align: center; border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 4px 8px; background: var(--card); font-size: 13px; line-height: 1.3; }
+  .scale b { display: block; font-family: "Itim", sans-serif; font-weight: 400; font-size: 26px; line-height: 1.1; color: var(--accent); }
+  @media (max-width: 420px) { .scale { gap: 5px; } .scale div { font-size: 12px; padding: 8px 2px; } }
+
+  .note { font-size: 15px; padding: 14px 16px; border-radius: 14px; background: var(--accent-soft); margin-top: 18px; border: 1.5px dashed var(--line); }
+  .note b { font-weight: 600; }
+
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; margin-top: 22px; padding: 14px 22px;
+    font-family: "Itim", sans-serif; font-size: 21px;
+    color: var(--accent-ink); background: var(--accent);
+    border: 2px solid var(--line); border-radius: 16px; cursor: pointer;
+    box-shadow: 3px 4px 0 var(--line);
+    transition: transform .1s, box-shadow .1s;
+  }
+  .btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 5px 0 var(--line); }
+  .btn:active { transform: translate(2px, 3px); box-shadow: 1px 1px 0 var(--line); }
+  .btn:disabled { background: var(--hair); color: var(--ink-faint); cursor: not-allowed; transform: none; box-shadow: 3px 4px 0 var(--line); }
+  .link { display: block; margin: 14px auto 0; background: none; border: 0; font: inherit; color: var(--ink-soft); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+
+  /* registration */
+  .id-input {
+    width: 100%; margin-top: 10px; padding: 16px;
+    font-family: "Itim", monospace; font-size: 32px; letter-spacing: .3em; text-align: center;
+    color: var(--ink); background: var(--card);
+    border: 2px solid var(--line); border-radius: 16px; outline: none;
+  }
+  .id-input::placeholder { color: var(--hair); }
+  .id-input:focus { background: var(--sel); }
+  .id-input.invalid { border-color: var(--err); }
+  .err { color: var(--err); font-size: 14px; margin-top: 6px; min-height: 22px; }
+  .privacy { list-style: none; padding: 0; margin: 8px 0; }
+  .privacy li { padding: 2px 0; }
+
+  /* quiz */
+  .qtop { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .back { background: none; border: 0; font: inherit; color: var(--ink-soft); cursor: pointer; padding: 4px 0; }
+  .back:disabled { visibility: hidden; }
+  .count { font-family: "Itim", sans-serif; font-size: 18px; }
+  .dots { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; }
+  .dots span { height: 8px; border-radius: 4px; background: var(--hair); transition: background .25s; }
+  .dots span.done { background: var(--accent); }
+  .dots span.now { outline: 2px solid var(--line); outline-offset: 1px; }
+  .qdim { display: inline-flex; gap: 6px; align-items: center; margin: 22px 0 6px; font-size: 14px; font-weight: 600; padding: 3px 12px; border-radius: 8px; border: 1.5px solid var(--line); transform: rotate(-1.5deg); }
+  .qtext { font-family: "Itim", sans-serif; font-size: clamp(22px, 5vw, 27px); line-height: 1.45; margin: 8px 0 20px; min-height: 2.9em; }
+  .opts { display: grid; gap: 10px; }
+  .opt {
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    padding: 12px 16px; font: inherit; font-size: 17px; font-weight: 500; text-align: left; color: var(--ink);
+    background: var(--card); border: 2px solid var(--line); border-radius: 14px; cursor: pointer;
+    transition: transform .1s, background .15s, box-shadow .1s;
+  }
+  .opt:hover { background: var(--sel); }
+  .opt .box { flex: none; width: 24px; height: 24px; border: 2px solid var(--line); border-radius: 7px; display: grid; place-items: center; }
+  .opt .box svg { width: 16px; height: 16px; opacity: 0; transform: scale(.4) rotate(-20deg); transition: .18s; }
+  .opt.sel { background: var(--sel); box-shadow: 3px 3px 0 var(--line); transform: translate(-1px, -1px); }
+  .opt.sel .box { background: var(--accent); }
+  .opt.sel .box svg { opacity: 1; transform: none; }
+  .opt kbd { margin-left: auto; font-family: inherit; font-size: 12px; color: var(--ink-faint); }
+  @media (hover: none) { .opt kbd { display: none; } }
+  .qanim { animation: slide .3s ease both; }
+  @keyframes slide { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
+
+  /* result */
+  .mode { text-align: center; }
+  .mode-art { width: 120px; height: 120px; display: block; margin: 8px auto 4px; animation: bob 4s ease-in-out infinite; }
+  .mode .name { font-family: "Itim", sans-serif; font-size: clamp(28px, 6.5vw, 36px); line-height: 1.2; margin: 4px 0 8px; }
+  .mode .score { display: inline-block; font-weight: 600; font-size: 15px; padding: 2px 14px; border: 1.5px solid var(--line); border-radius: 8px; background: var(--d4s); margin-bottom: 12px; transform: rotate(-1.5deg); }
+  .bars { display: grid; gap: 14px; margin-top: 12px; }
+  .bar-row .lbl { display: flex; justify-content: space-between; gap: 10px; font-size: 15px; font-weight: 500; margin-bottom: 5px; }
+  .bar-row .lbl b { font-family: "Itim", sans-serif; font-weight: 400; font-size: 19px; line-height: 1.2; }
+  .bar-track { height: 16px; border-radius: 8px; border: 2px solid var(--line); background: var(--card); overflow: hidden; }
+  .bar-fill { height: 100%; width: 0; border-right: 2px solid var(--line); transition: width 1s cubic-bezier(.3,.9,.3,1); }
+  .bar-fill.zero { border-right: 0; }
+  .insight { display: flex; gap: 14px; align-items: flex-start; }
+  .insight .ic { flex: none; width: 54px; height: 54px; border-radius: 16px; border: 2px solid var(--line); display: grid; place-items: center; font-size: 26px; transform: rotate(-4deg); }
+  .insight .tag { font-size: 14px; font-weight: 600; color: var(--accent); margin-bottom: 2px; }
+  .sending { font-size: 13px; color: var(--ink-faint); text-align: center; margin-top: 16px; min-height: 20px; }
+  .footer-note { text-align: center; font-size: 14px; color: var(--ink-soft); margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<!-- ลายเส้นที่ใช้ซ้ำ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="squig" viewBox="0 0 200 14" preserveAspectRatio="none">
+      <path d="M2 9 C 20 3, 35 13, 55 7 S 90 3, 110 8 S 150 12, 170 6 S 192 5, 198 8" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity=".55"/>
+    </symbol>
+    <symbol id="tick" viewBox="0 0 16 16"><path d="M3 8.5 L6.5 12 L13 4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<main class="wrap">
+
+  <!-- ===== หน้า 1 : Landing ===== -->
+  <section class="screen active" id="s-landing">
+    <div class="card">
+      <div class="hero">
+        <div>
+          <span class="tape">World Mental Health Day</span>
+          <h1>Mental Wellness Check-In</h1>
+          <h2 class="soft" style="margin-top:6px"><span class="scribble">ช่วงนี้ใจคุณเป็นยังไง?<svg><use href="#squig"/></svg></span></h2>
+        </div>
+        <svg class="hero-art" viewBox="0 0 100 100" aria-hidden="true">
+          <g stroke="var(--line)" stroke-width="2.5" stroke-linecap="round" fill="none">
+            <path d="M50 6v10M50 84v10M6 50h10M84 50h10M19 19l7 7M74 74l7 7M81 19l-7 7M26 74l-7 7"/>
+          </g>
+          <circle cx="50" cy="50" r="26" fill="var(--d4s)" stroke="var(--line)" stroke-width="2.5"/>
+          <circle cx="41" cy="47" r="2.8" fill="var(--line)"/><circle cx="59" cy="47" r="2.8" fill="var(--line)"/>
+          <path d="M42 57 q8 7 16 0" fill="none" stroke="var(--line)" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="35" cy="55" r="4" fill="var(--d5)" opacity=".45"/><circle cx="65" cy="55" r="4" fill="var(--d5)" opacity=".45"/>
+        </svg>
+      </div>
+      <p class="soft" style="margin-top:14px">เนื่องในวันสุขภาพจิตโลก ชวนคุณมาเช็กอินตัวเองผ่านแบบทดสอบสั้น ๆ ที่จะช่วยสะท้อนภาพรวมสุขภาวะของคุณในช่วงนี้</p>
+      <div class="facts"><span>24 ข้อ</span><span>3–5 นาที</span><span>ผลลัพธ์เห็นแค่คุณคนเดียว</span></div>
+      <p style="margin:0">ทำเสร็จแล้วมาดูกันว่า...</p>
+      <ul class="list">
+        <li>ช่วงนี้คุณกำลังอยู่ในโหมดไหน</li>
+        <li>จุดแข็งที่ช่วยเติมพลังให้คุณคืออะไร</li>
+        <li>มีด้านไหนที่อาจต้องการการดูแลเพิ่มอีกนิด</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>คุณจะได้รับ Your Well-being Profile</h2>
+      <p class="soft" style="margin:0">รายงานสุขภาวะส่วนตัวใน 6 มิติ</p>
+      <div class="dims" id="dimList"></div>
+    </div>
+
+    <div class="card">
+      <h2>วิธีตอบ</h2>
+      <p class="soft" style="margin:0">เลือกคำตอบที่ตรงกับตัวคุณมากที่สุด โดยนึกถึงช่วง 2–4 สัปดาห์ที่ผ่านมา</p>
+      <div class="scale" id="scaleTable"></div>
+      <div class="note"><b>ไม่มีคำตอบถูกหรือผิด</b> แบบทดสอบนี้จัดทำขึ้นเพื่อให้พนักงานได้ลองสำรวจตัวเองและสร้างความตระหนักรู้เกี่ยวกับสุขภาวะของตนเอง</div>
+      <button class="btn" data-go="s-register">เริ่มทำแบบทดสอบ</button>
+    </div>
+  </section>
+
+  <!-- ===== หน้า 2 : Registration ===== -->
+  <section class="screen" id="s-register">
+    <div class="card">
+      <span class="tape">ก่อนเริ่มกันนิดนึง</span>
+      <h1 style="font-size:32px">กรอกรหัสพนักงาน</h1>
+      <p class="soft" style="margin:0">รหัสพนักงาน 8 หลัก</p>
+      <input id="empId" class="id-input" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="00000000" aria-label="รหัสพนักงาน 8 หลัก">
+      <div class="err" id="empErr"></div>
+      <div class="note">
+        <b>รหัสพนักงานจะถูกใช้เพื่อ</b>
+        <ul class="privacy">
+          <li>✅ บันทึกจำนวนผู้เข้าร่วมกิจกรรม</li>
+          <li>❌ ไม่แสดงผลลัพธ์ต่อหัวหน้างานหรือบุคคลอื่น</li>
+        </ul>
+        ผลลัพธ์จะแสดงเฉพาะผู้ทำแบบทดสอบเท่านั้น
+      </div>
+      <button class="btn" id="startBtn" disabled>เริ่มตอบคำถาม</button>
+      <button class="link" data-go="s-landing">กลับหน้าแรก</button>
+    </div>
+  </section>
+
+  <!-- ===== หน้า 3 : Quiz ===== -->
+  <section class="screen" id="s-quiz">
+    <div class="card">
+      <div class="qtop">
+        <button class="back" id="prevBtn">← ข้อก่อนหน้า</button>
+        <span class="count" id="qCount">1 / 24</span>
+      </div>
+      <div class="dots" id="qDots"></div>
+      <div id="qBody">
+        <span class="qdim" id="qDim"></span>
+        <div class="qtext" id="qText"></div>
+        <div class="opts" id="qOpts"></div>
+      </div>
+      <button class="btn" id="submitBtn" style="display:none">ดูผลลัพธ์ของฉัน</button>
+      <p class="faint" style="margin:18px 0 0;text-align:center">ตอบตามความรู้สึกในช่วง 2–4 สัปดาห์ที่ผ่านมา</p>
+    </div>
+  </section>
+
+  <!-- ===== หน้า 4 : Report ===== -->
+  <section class="screen" id="s-result">
+    <div class="card mode" id="rModeCard">
+      <span class="tape">Your Well-being Profile</span>
+      <p class="soft" style="margin:10px 0 0">นี่คือภาพสะท้อนสุขภาวะของคุณในช่วงนี้</p>
+      <div id="rArt"></div>
+      <div class="name" id="rMode"></div>
+      <span class="score" id="rScore"></span>
+      <p class="soft" id="rDesc" style="margin:0"></p>
+    </div>
+
+    <div class="card">
+      <h2><span class="scribble">Well-being Profile<svg><use href="#squig"/></svg></span></h2>
+      <div class="bars" id="rBars"></div>
+    </div>
+
+    <div class="card">
+      <div class="insight">
+        <div class="ic" id="rStrIc"></div>
+        <div>
+          <div class="tag">จุดที่โดดเด่นที่สุดของคุณ</div>
+          <h3 id="rStrTitle"></h3>
+          <p class="soft" id="rStrText" style="margin:0"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="insight">
+        <div class="ic" id="rGrowIc"></div>
+        <div>
+          <div class="tag">มิติที่ควรเติมพลัง</div>
+          <h3 id="rGrowTitle"></h3>
+          <p class="soft" id="rGrowText" style="margin:0"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sending" id="sendStatus"></div>
+    <p class="footer-note">ผลลัพธ์นี้เป็นเพียงการสำรวจตนเองเบื้องต้น ไม่ใช่การวินิจฉัยทางการแพทย์<br>ถ้ารู้สึกไม่ไหว คุยกับคนที่ไว้ใจได้เสมอ หรือโทรสายด่วนสุขภาพจิต 1323</p>
+  </section>
+
+</main>
+
+<script>
+  // ============ CONFIG ============
+  // วาง URL ของ Google Apps Script Web App (ลงท้ายด้วย /exec) ที่นี่ — เว้นว่างไว้หากเสิร์ฟผ่าน Apps Script โดยตรง
+  const SHEET_ENDPOINT = "";
+
+  // ============ DATA ============
+  const SCALE = [
+    { v: 4, t: "ใช่เลย" },
+    { v: 3, t: "ค่อนข้างใช่" },
+    { v: 2, t: "บางครั้ง" },
+    { v: 1, t: "ไม่ค่อยใช่" },
+    { v: 0, t: "ไม่ใช่เลย" },
+  ];
+
+  const DIMS = [
+    { key: "emotional", icon: "🧠", name: "Emotional Balance", color: "var(--d1)", tint: "var(--d1s)",
+      strong: ["คุณเข้าใจอารมณ์ของตัวเองได้ดี", "คุณสามารถรับรู้ความรู้สึกของตัวเองและจัดการกับอารมณ์ต่าง ๆ ได้ค่อนข้างดี แม้อาจมีวันที่ไม่ง่าย แต่คุณมักกลับมาตั้งหลักและเดินหน้าต่อได้"],
+      grow:   ["ลองฟังเสียงของตัวเองให้มากขึ้น", "ช่วงนี้อาจมีหลายเรื่องเข้ามาพร้อมกันจนไม่มีเวลาเช็กความรู้สึกของตัวเอง ลองหยุดสักนิดเพื่อสำรวจว่าในตอนนี้คุณกำลังรู้สึกอย่างไร"] },
+    { key: "stress", icon: "🌊", name: "Stress Management", color: "var(--d2)", tint: "var(--d2s)",
+      strong: ["คุณรับมือกับแรงกดดันได้ดี", "เมื่อมีเรื่องให้กังวลหรือเครียด คุณสามารถจัดการกับสถานการณ์ต่าง ๆ ได้โดยไม่ปล่อยให้ความเครียดเข้ามาครอบงำชีวิตมากเกินไป"],
+      grow:   ["ถึงเวลาพักจากความกังวลบ้าง", "คุณอาจกำลังแบกรับหลายเรื่องไว้พร้อมกัน ลองหาเวลาผ่อนคลายในแบบที่เหมาะกับตัวเอง และไม่จำเป็นต้องจัดการทุกเรื่องให้สมบูรณ์แบบเสมอไป"] },
+    { key: "resilience", icon: "🌱", name: "Resilience", color: "var(--d3)", tint: "var(--d3s)",
+      strong: ["คุณล้มแล้วลุกได้เสมอ", "เมื่อเจออุปสรรคหรือเรื่องที่ไม่เป็นไปตามแผน คุณสามารถปรับตัว เรียนรู้ และกลับมาเดินหน้าต่อได้ ความสามารถนี้ช่วยให้คุณรับมือกับความเปลี่ยนแปลงได้ดี"],
+      grow:   ["ค่อย ๆ ไปทีละก้าวก็ได้", "เมื่อเจอเรื่องยากหรือผิดหวัง อย่ากดดันตัวเองมากเกินไป การให้เวลากับตัวเองในการตั้งหลักก็เป็นส่วนหนึ่งของการก้าวไปข้างหน้าเช่นกัน"] },
+    { key: "energy", icon: "⚡", name: "Energy & Vitality", color: "var(--d4)", tint: "var(--d4s)",
+      strong: ["คุณมีพลังพร้อมใช้ชีวิต", "ช่วงนี้คุณมีพลังงานทั้งทางกายและใจค่อนข้างดี ทำให้ยังมีแรงสำหรับสิ่งที่ต้องทำ รวมถึงสิ่งที่คุณอยากทำเพื่อความสุขของตัวเอง"],
+      grow:   ["แบตเตอรี่ของคุณอาจต้องการการชาร์จเพิ่ม", "ช่วงนี้คุณอาจใช้พลังงานไปมากกว่าที่เติมกลับมา ลองให้ความสำคัญกับการพักผ่อน การนอนหลับ หรือกิจกรรมที่ช่วยให้รู้สึกสดชื่นขึ้น"] },
+    { key: "connection", icon: "🤝", name: "Social Connection", color: "var(--d5)", tint: "var(--d5s)",
+      strong: ["คุณมีคนรอบตัวที่เป็นพลังใจ", "คุณมีความสัมพันธ์ที่ดีและมีคนที่พร้อมรับฟัง สนับสนุน หรืออยู่ข้าง ๆ ในวันที่ต้องการ ทำให้คุณไม่ต้องรับมือกับทุกอย่างเพียงลำพัง"],
+      grow:   ["ไม่จำเป็นต้องรับมือทุกอย่างคนเดียว", "บางครั้งการพูดคุยหรือขอความช่วยเหลือจากคนที่ไว้ใจ อาจช่วยแบ่งเบาความรู้สึกได้มากกว่าที่คิด ลองเปิดพื้นที่ให้ตัวเองได้เชื่อมโยงกับคนรอบข้างมากขึ้น"] },
+    { key: "meaning", icon: "🎯", name: "Meaning & Positive Mindset", color: "var(--d6)", tint: "var(--d6s)",
+      strong: ["คุณยังมองเห็นความหมายและความหวัง", "คุณมองเห็นคุณค่าของสิ่งที่ทำ และยังมีสิ่งที่ตั้งตารอหรืออยากทำต่อไป มุมมองแบบนี้ช่วยสร้างพลังใจให้กับชีวิตในแต่ละวัน"],
+      grow:   ["ลองกลับมามองหาสิ่งที่ทำให้ใจมีพลัง", "ช่วงนี้คุณอาจกำลังโฟกัสกับเรื่องที่ต้องทำจนลืมสิ่งที่ทำให้รู้สึกตื่นเต้นหรือมีความหมาย ลองหาเวลาทำสิ่งที่ชอบ หรือกลับไปหาสิ่งที่เคยสร้างแรงบันดาลใจให้ตัวเอง"] },
+  ];
+
+  // ข้อ 1–4 = มิติที่ 1, 5–8 = มิติที่ 2, ... 21–24 = มิติที่ 6
+  const QUESTIONS = [
+    "ฉันสามารถบอกได้ว่าตอนนี้ตัวเองกำลังรู้สึกอะไร",
+    "เมื่ออารมณ์ไม่ดี ฉันสามารถจัดการตัวเองได้โดยไม่ปล่อยให้กระทบทั้งวัน",
+    "ฉันไม่ค่อยเก็บเรื่องเล็ก ๆ มาคิดวนซ้ำ",
+    "โดยรวมแล้วฉันรู้สึกมั่นคงทางอารมณ์",
+    "ช่วงนี้ฉันรู้สึกว่าสามารถรับมือกับความกดดันต่าง ๆ ได้",
+    "ฉันมีวิธีคลายเครียดที่เหมาะกับตัวเอง",
+    "ความเครียดไม่ได้ส่งผลต่อการนอนหรือการใช้ชีวิตมากเกินไป",
+    "เมื่อเจอเรื่องหนัก ๆ ฉันยังสามารถโฟกัสกับสิ่งสำคัญได้",
+    "เมื่อเกิดปัญหา ฉันสามารถกลับมาตั้งหลักได้",
+    "ฉันมองว่าความผิดพลาดเป็นโอกาสในการเรียนรู้",
+    "เมื่อเจออุปสรรค ฉันยังเชื่อว่าจะหาทางออกได้",
+    "ฉันสามารถก้าวผ่านเรื่องที่ทำให้ผิดหวังได้",
+    "ตื่นนอนแล้วรู้สึกพร้อมเริ่มต้นวันใหม่",
+    "ฉันมีพลังงานเพียงพอสำหรับสิ่งที่ต้องทำในแต่ละวัน",
+    "ช่วงนี้ฉันได้พักผ่อนอย่างเพียงพอ",
+    "ฉันยังมีแรงสำหรับกิจกรรมที่ตัวเองชอบ",
+    "ฉันมีคนที่สามารถพูดคุยได้อย่างสบายใจ",
+    "ฉันรู้สึกว่ามีคนรับฟังและเข้าใจฉัน",
+    "ฉันไม่รู้สึกว่าต้องรับมือทุกอย่างเพียงลำพัง",
+    "ฉันมีความสัมพันธ์ที่ช่วยเติมพลังให้ชีวิต",
+    "ฉันรู้สึกว่าสิ่งที่ทำอยู่มีคุณค่า",
+    "ฉันยังมีสิ่งที่ตั้งตารอในอนาคต",
+    "ฉันสามารถมองเห็นเรื่องดี ๆ รอบตัวได้",
+    "โดยรวมแล้วฉันรู้สึกพอใจกับชีวิตในตอนนี้",
+  ];
+
+  // ภาพวาดประจำโหมด (พระอาทิตย์ / มีเมฆ / เมฆ / ฝน) พร้อมหน้ายิ้ม
+  const L = 'stroke="var(--line)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"';
+  const face = (x, y) => `<circle cx="${x - 8}" cy="${y}" r="2.6" fill="var(--line)"/><circle cx="${x + 8}" cy="${y}" r="2.6" fill="var(--line)"/><path d="M${x - 6} ${y + 8} q6 5 12 0" fill="none" ${L}/>`;
+  const cloud = (fill) => `<path d="M28 88 h58 a16 16 0 0 0 -4 -31 a22 22 0 0 0 -41 -6 a17 17 0 0 0 -13 37 z" fill="${fill}" ${L}/>`;
+  const ART = {
+    sun: `<svg class="mode-art" viewBox="0 0 120 120"><g fill="none" ${L}><path d="M60 8v12M60 100v12M8 60h12M100 60h12M23 23l9 9M88 88l9 9M97 23l-9 9M32 88l-9 9"/></g><circle cx="60" cy="60" r="30" fill="var(--d4s)" ${L}/>${face(60, 56)}</svg>`,
+    partly: `<svg class="mode-art" viewBox="0 0 120 120"><g fill="none" ${L}><path d="M44 8v9M16 36h9M24 16l7 7M64 16l-7 7"/></g><circle cx="44" cy="40" r="20" fill="var(--d4s)" ${L}/>${cloud("var(--card)")}${face(62, 72)}</svg>`,
+    cloudy: `<svg class="mode-art" viewBox="0 0 120 120">${cloud("var(--d2s)")}${face(60, 72)}</svg>`,
+    rain: `<svg class="mode-art" viewBox="0 0 120 120"><path d="M28 78 h58 a16 16 0 0 0 -4 -31 a22 22 0 0 0 -41 -6 a17 17 0 0 0 -13 37 z" fill="var(--d1s)" ${L}/><circle cx="52" cy="60" r="2.6" fill="var(--line)"/><circle cx="68" cy="60" r="2.6" fill="var(--line)"/><path d="M55 69 q5 -3 10 0" fill="none" ${L}/><g fill="none" stroke="var(--d2)" stroke-width="3" stroke-linecap="round"><path d="M40 90l-4 10M60 90l-4 10M80 90l-4 10"/></g><path d="M88 96 q6 -12 12 0 q-6 6 -12 0z" fill="var(--d5s)" ${L}/></svg>`,
+  };
+
+  const MODES = [
+    { min: 77, art: "sun",    name: "Recharge Ready", desc: "คุณกำลังอยู่ในช่วงที่ค่อนข้างสมดุล ทั้งด้านพลังงาน อารมณ์ และความสัมพันธ์" },
+    { min: 58, art: "partly", name: "Need a Little Pause", desc: "หลายอย่างกำลังไปได้ดี แต่บางด้านอาจเริ่มใช้พลังงานมากกว่าที่เติมกลับมา" },
+    { min: 39, art: "cloudy", name: "Running Low Battery", desc: "ช่วงนี้อาจมีหลายเรื่องที่ใช้พลังงานทั้งทางกายและใจมากกว่าปกติ" },
+    { min: 0,  art: "rain",   name: "Time to Take Care of Yourself", desc: "คุณอาจกำลังอยู่ในช่วงที่ต้องการการพักและการดูแลตัวเองมากขึ้น" },
+  ];
+
+  // ============ STATE ============
+  const state = { empId: "", sessionId: "", answers: new Array(24).fill(null), idx: 0 };
+  const $ = (id) => document.getElementById(id);
+
+  // ============ SHEET LOGGING ============
+  function logToSheet(payload) {
+    // เสิร์ฟผ่าน Apps Script โดยตรง (HtmlService)
+    if (typeof google !== "undefined" && google.script && google.script.run) {
+      return new Promise((res) => google.script.run.withSuccessHandler(() => res(true)).withFailureHandler(() => res(false)).logEvent(payload));
+    }
+    if (!SHEET_ENDPOINT) return Promise.resolve(null);
+    return fetch(SHEET_ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+    }).then(() => true).catch(() => false);
+  }
+
+  // ============ NAV ============
+  function go(id) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("active", s.id === id));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (id === "s-register") setTimeout(() => $("empId").focus(), 300);
+  }
+  document.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => go(b.dataset.go)));
+
+  // ============ LANDING ============
+  $("dimList").innerHTML = DIMS.map((d) => `<div class="dim" style="background:${d.tint}"><i>${d.icon}</i>${d.name}</div>`).join("");
+  $("scaleTable").innerHTML = SCALE.map((s) => `<div><b>${s.v}</b>${s.t}</div>`).join("");
+  $("qDots").innerHTML = "<span></span>".repeat(24);
+
+  // ============ REGISTER ============
+  const empInput = $("empId");
+  empInput.addEventListener("input", () => {
+    empInput.value = empInput.value.replace(/\D/g, "").slice(0, 8);
+    $("startBtn").disabled = !/^\d{8}$/.test(empInput.value);
+    empInput.classList.remove("invalid");
+    $("empErr").textContent = "";
+  });
+  empInput.addEventListener("keydown", (e) => { if (e.key === "Enter") $("startBtn").click(); });
+  $("startBtn").addEventListener("click", () => {
+    if (!/^\d{8}$/.test(empInput.value)) {
+      empInput.classList.add("invalid");
+      $("empErr").textContent = "กรุณากรอกรหัสพนักงานเป็นตัวเลข 8 หลัก";
+      return;
+    }
+    state.empId = empInput.value;
+    state.sessionId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    state.answers.fill(null);
+    state.idx = 0;
+    logToSheet({ action: "start", sessionId: state.sessionId, employeeId: state.empId });
+    renderQ();
+    go("s-quiz");
+  });
+
+  // ============ QUIZ ============
+  function paintDots() {
+    $("qDots").querySelectorAll("span").forEach((s, k) => {
+      s.classList.toggle("done", state.answers[k] !== null);
+      s.classList.toggle("now", k === state.idx);
+    });
+    $("submitBtn").style.display = state.answers.every((a) => a !== null) ? "" : "none";
+  }
+
+  function renderQ() {
+    const i = state.idx;
+    const d = DIMS[Math.floor(i / 4)];
+    $("qCount").textContent = `${i + 1} / 24`;
+    $("prevBtn").disabled = i === 0;
+    const qd = $("qDim");
+    qd.textContent = `${d.icon} ${d.name}`;
+    qd.style.background = d.tint;
+    $("qText").textContent = QUESTIONS[i];
+    $("qOpts").innerHTML = SCALE.map((s, k) =>
+      `<button class="opt${state.answers[i] === s.v ? " sel" : ""}" data-v="${s.v}"><span class="box"><svg><use href="#tick"/></svg></span>${s.t}<kbd>${k + 1}</kbd></button>`).join("");
+    const body = $("qBody");
+    body.classList.remove("qanim"); void body.offsetWidth; body.classList.add("qanim");
+    paintDots();
+  }
+
+  $("qOpts").addEventListener("click", (e) => {
+    const b = e.target.closest(".opt");
+    if (!b) return;
+    state.answers[state.idx] = Number(b.dataset.v);
+    $("qOpts").querySelectorAll(".opt").forEach((o) => o.classList.toggle("sel", o === b));
+    paintDots();
+    clearTimeout(state.t);
+    state.t = setTimeout(() => {
+      const next = state.answers.findIndex((a, k) => a === null && k > state.idx);
+      const firstEmpty = state.answers.indexOf(null);
+      if (next !== -1) { state.idx = next; renderQ(); }
+      else if (firstEmpty !== -1) { state.idx = firstEmpty; renderQ(); }
+      else if (state.idx < 23) { state.idx++; renderQ(); }
+    }, 320);
+  });
+  $("prevBtn").addEventListener("click", () => { if (state.idx > 0) { clearTimeout(state.t); state.idx--; renderQ(); } });
+  document.addEventListener("keydown", (e) => {
+    if (!$("s-quiz").classList.contains("active")) return;
+    const map = { "1": 4, "2": 3, "3": 2, "4": 1, "5": 0 };
+    if (e.key in map) { const b = $("qOpts").querySelector(`[data-v="${map[e.key]}"]`); b && b.click(); }
+    if (e.key === "ArrowLeft") $("prevBtn").click();
+  });
+
+  // ============ RESULT ============
+  $("submitBtn").addEventListener("click", () => {
+    if (state.answers.some((a) => a === null)) return;
+    const dimScores = DIMS.map((_, k) => state.answers.slice(k * 4, k * 4 + 4).reduce((a, b) => a + b, 0));
+    const pct = dimScores.map((s) => Math.round((s / 16) * 100));
+    const total = dimScores.reduce((a, b) => a + b, 0);
+    const mode = MODES.find((m) => total >= m.min);
+
+    // เลือกมิติสูงสุด/ต่ำสุดเพียง 1 มิติ (หากคะแนนเท่ากัน เลือกตามลำดับมิติ)
+    let hi = 0, lo = 0;
+    pct.forEach((p, k) => { if (p > pct[hi]) hi = k; if (p < pct[lo]) lo = k; });
+    if (hi === lo) lo = DIMS.length - 1; // กรณีทุกมิติคะแนนเท่ากัน ไม่ให้แสดงมิติเดียวกันทั้งสองช่อง
+
+    $("rArt").innerHTML = ART[mode.art];
+    $("rMode").textContent = mode.name;
+    $("rScore").textContent = `คะแนนรวม ${total} / 96`;
+    $("rDesc").textContent = mode.desc;
+
+    $("rBars").innerHTML = DIMS.map((d, k) => `
+      <div class="bar-row">
+        <div class="lbl"><span>${d.icon} ${d.name}</span><b>${pct[k]}%</b></div>
+        <div class="bar-track"><div class="bar-fill${pct[k] === 0 ? " zero" : ""}" style="background:${d.color}" data-w="${pct[k]}"></div></div>
+      </div>`).join("");
+
+    const S = DIMS[hi], G = DIMS[lo];
+    $("rStrIc").textContent = S.icon; $("rStrIc").style.background = S.tint;
+    $("rStrTitle").textContent = S.strong[0]; $("rStrText").textContent = S.strong[1];
+    $("rGrowIc").textContent = G.icon; $("rGrowIc").style.background = G.tint;
+    $("rGrowTitle").textContent = G.grow[0]; $("rGrowText").textContent = G.grow[1];
+
+    go("s-result");
+    setTimeout(() => document.querySelectorAll(".bar-fill").forEach((b) => (b.style.width = b.dataset.w + "%")), 250);
+
+    const st = $("sendStatus");
+    logToSheet({ action: "submit", sessionId: state.sessionId, employeeId: state.empId, totalScore: total, overallMode: mode.name })
+      .then((r) => { st.textContent = r === true ? "บันทึกการเข้าร่วมกิจกรรมเรียบร้อยแล้ว" : r === false ? "ไม่สามารถบันทึกข้อมูลได้ในขณะนี้" : ""; });
+  });
+</script>
+</body>
+</html>
