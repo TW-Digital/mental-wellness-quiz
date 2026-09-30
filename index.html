@@ -3,360 +3,394 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#19226c">
 <title>Mental Wellness Check-In</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Itim&family=Mali:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
+    /* โทนหลัก: น้ำเงินเข้ม #19226c · น้ำเงินฟ้า #01a5dc · ขาว + สีเสริมสด ๆ */
     --navy: #19226c;
-    --navy-deep: #10164d;
     --cyan: #01a5dc;
-    --white: #ffffff;
-    /* สีเสริมให้สดขึ้น */
-    --lime: #c8f53c;
-    --pink: #ff5fa2;
-    --yellow: #ffd23f;
-    --orange: #ff8a3d;
-    --violet: #7b61ff;
-    --bg: var(--navy);
-    --fg: var(--white);
+    --paper: #19226c;
+    --paper-dot: #2a3590;
+    --card: #ffffff;
+    --ink: #19226c;
+    --ink-soft: #414b8f;
+    --ink-faint: #8d93c2;
+    --line: #19226c;
+    --hair: #dde2f5;
+    --pop: #01a5dc;          /* เงาสติกเกอร์ของการ์ด */
+    --accent: #01a5dc;
+    --accent-ink: #ffffff;
+    --accent-soft: #d6f3fd;
+    --sel: #d6f3fd;
+    --err: #ff4f7b;
+    --on-paper: #ffffff;
+    --on-paper-soft: #b8c0ef;
+    /* สีประจำมิติ: soft = พื้นสติกเกอร์, strong = แท่งกราฟ */
+    --d1s: #c6effd; --d1: #01a5dc;
+    --d2s: #ded8ff; --d2: #7b61ff;
+    --d3s: #e4f9b0; --d3: #7cc516;
+    --d4s: #fff0a8; --d4: #f5b400;
+    --d5s: #ffd3e6; --d5: #ff4f93;
+    --d6s: #ffdcc6; --d6: #ff7a2f;
   }
+
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
-    font-family: "Kanit", system-ui, sans-serif;
-    font-weight: 400;
-    background: var(--bg);
-    color: var(--fg);
+    font-family: "Mali", system-ui, sans-serif;
+    color: var(--ink);
+    background-color: var(--paper);
+    background-image: radial-gradient(var(--paper-dot) 1.2px, transparent 1.2px);
+    background-size: 22px 22px;
     min-height: 100vh;
-    line-height: 1.55;
-    overflow-x: hidden;
-    transition: background-color .5s ease, color .5s ease;
+    line-height: 1.7;
     -webkit-font-smoothing: antialiased;
   }
-  .screen { display: none; }
+  .wrap { max-width: 600px; margin: 0 auto; padding: 28px 16px 56px; }
+  .screen { display: none; animation: pop .35s ease both; }
   .screen.active { display: block; }
-  .wrap { position: relative; max-width: 620px; margin: 0 auto; padding: 0 16px; }
+  @keyframes pop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .card {
+    background: var(--card);
+    border: 2px solid var(--line);
+    border-radius: 22px;
+    padding: 28px 24px;
+    box-shadow: 7px 8px 0 var(--pop);
+    transition: box-shadow .4s;
+  }
+  .card + .card { margin-top: 24px; }
+  .card.pop-y { --pop: #ffd23f; }
+  .card.pop-p { --pop: #ff4f93; }
+  .card.pop-l { --pop: #c8f53c; }
+  .card.c-cyan { background: var(--cyan); --pop: #ffd23f; }
+  .card.c-cyan .soft { color: var(--navy); }
+  @media (max-width: 480px) { .card { padding: 22px 18px; } }
+
+  h1, h2, h3, .hand { font-family: "Itim", "Mali", sans-serif; font-weight: 400; }
+  h1 { font-size: clamp(30px, 7vw, 40px); line-height: 1.25; margin: 10px 0 4px; }
+  h2 { font-size: 23px; margin: 0 0 6px; line-height: 1.35; }
+  h3 { font-size: 20px; margin: 0 0 4px; line-height: 1.4; }
   p { margin: 0 0 12px; }
+  .soft { color: var(--ink-soft); }
+  .faint { color: var(--ink-faint); font-size: 14px; }
 
-  /* ---------- ปุ่ม ---------- */
+  /* ขีดเส้นใต้แบบวาดมือ */
+  .scribble { position: relative; display: inline-block; z-index: 0; }
+  .scribble svg { position: absolute; left: -4px; right: -4px; bottom: -6px; width: calc(100% + 8px); height: 14px; z-index: -1; }
+
+  .hero { position: relative; padding-top: 2px; }
+  .hero h1 { padding-right: 80px; }
+  .hero-art { position: absolute; top: -10px; right: -6px; width: 92px; height: 92px; animation: bob 4s ease-in-out infinite; }
+  @media (max-width: 480px) { .hero h1 { padding-right: 0; margin-top: 18px; } .hero-art { width: 72px; height: 72px; top: -12px; } }
+  @keyframes bob { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg) translateY(-3px); } }
+  .tape {
+    display: inline-block; font-size: 13px; font-weight: 600; padding: 3px 12px;
+    background: #ffd23f; border: 1.5px dashed var(--line); border-radius: 6px; transform: rotate(-2deg);
+  }
+
+  .facts { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 18px; }
+  .facts span { font-size: 14px; font-weight: 600; padding: 4px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--d1s); }
+  .facts span:nth-child(2) { background: var(--d4s); }
+  .facts span:nth-child(3) { background: var(--d5s); }
+
+  ul.list { list-style: none; padding: 0; margin: 4px 0 0; }
+  ul.list li { position: relative; padding: 5px 0 5px 28px; }
+  ul.list li::before { content: ""; position: absolute; left: 4px; top: 13px; width: 12px; height: 12px; border: 2px solid var(--accent); border-radius: 50%; }
+
+  .dims { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+  @media (max-width: 420px) { .dims { grid-template-columns: 1fr; } }
+  .dim { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; border: 1.5px solid var(--line); font-size: 15px; font-weight: 500; line-height: 1.35; }
+  .dim:nth-child(odd) { transform: rotate(-.6deg); }
+  .dim:nth-child(even) { transform: rotate(.6deg); }
+  .dim i { font-style: normal; font-size: 20px; }
+
+  .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0 4px; }
+  .scale div { text-align: center; border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 4px 8px; background: var(--card); font-size: 13px; line-height: 1.3; }
+  .scale b { display: block; font-family: "Itim", sans-serif; font-weight: 400; font-size: 26px; line-height: 1.1; color: var(--navy); }
+  .scale div:nth-child(1) { background: var(--d3s); } .scale div:nth-child(2) { background: var(--d1s); } .scale div:nth-child(3) { background: var(--d4s); } .scale div:nth-child(4) { background: var(--d6s); } .scale div:nth-child(5) { background: var(--d5s); }
+  @media (max-width: 420px) { .scale { gap: 5px; } .scale div { font-size: 12px; padding: 8px 2px; } }
+
+  .note { font-size: 15px; padding: 14px 16px; border-radius: 14px; background: var(--accent-soft); margin-top: 18px; border: 1.5px dashed var(--line); }
+  .note b { font-weight: 600; }
+
   .btn {
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    width: 100%; padding: 17px 24px; margin-top: 24px;
-    font: inherit; font-size: 20px; font-weight: 700; letter-spacing: .01em;
-    color: var(--navy); background: var(--lime);
-    border: 0; border-radius: 999px; cursor: pointer;
-    transition: transform .15s ease, background .2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; margin-top: 22px; padding: 14px 22px;
+    font-family: "Itim", sans-serif; font-size: 21px;
+    color: var(--navy); background: var(--cyan);
+    border: 2px solid var(--line); border-radius: 16px; cursor: pointer;
+    box-shadow: 3px 4px 0 var(--line);
+    transition: transform .1s, box-shadow .1s;
   }
-  .btn:hover { transform: scale(1.03); }
-  .btn:active { transform: scale(.97); }
-  .btn:disabled { background: rgba(255,255,255,.18); color: rgba(255,255,255,.5); cursor: not-allowed; transform: none; }
-  .btn.white { background: var(--white); }
-  .btn.cyan { background: var(--cyan); color: var(--white); }
-  .btn .arrow { font-size: 22px; transition: transform .2s; }
-  .btn:hover .arrow { transform: translateX(4px); }
-  .link { display: block; margin: 16px auto 0; background: none; border: 0; font: inherit; color: inherit; opacity: .75; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+  .btn:hover { transform: translate(-1px, -1px); box-shadow: 4px 5px 0 var(--line); }
+  .btn:active { transform: translate(2px, 3px); box-shadow: 1px 1px 0 var(--line); }
+  .btn:disabled { background: var(--hair); color: var(--ink-faint); cursor: not-allowed; transform: none; box-shadow: 3px 4px 0 var(--line); }
+  .link { display: block; margin: 14px auto 0; background: none; border: 0; font: inherit; color: var(--ink-soft); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
 
-  /* ---------- รูปทรงตกแต่ง ---------- */
-  .shape { position: absolute; pointer-events: none; }
-  .spin { animation: spin 22s linear infinite; }
-  .spin.rev { animation-direction: reverse; animation-duration: 30s; }
-  .wobble { animation: wobble 6s ease-in-out infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes wobble { 0%,100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-10px) rotate(6deg); } }
-
-  /* ---------- หน้า 1 : Landing ---------- */
-  .hero { position: relative; padding: 44px 0 36px; overflow: hidden; }
-  .hero .kicker { display: inline-block; font-size: 14px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--navy); background: var(--cyan); padding: 4px 14px; border-radius: 999px; position: relative; z-index: 2; }
-  .big {
-    position: relative; z-index: 2;
-    font-weight: 900; font-size: clamp(50px, 15vw, 92px); line-height: 1.12; letter-spacing: -.02em;
-    margin: 18px 0 8px;
-  }
-  .big span { display: inline-block; padding: 0 .12em; border-radius: .18em; }
-  .big .hl1 { background: var(--cyan); color: var(--navy); transform: rotate(-2deg); }
-  .big .hl2 { background: var(--pink); color: var(--navy); transform: rotate(1.5deg); }
-  .big .hl3 { color: var(--lime); }
-  .hero .title-en { position: relative; z-index: 2; font-size: 22px; font-weight: 600; margin: 8px 0 0; }
-  .hero .intro { position: relative; z-index: 2; font-size: 17px; font-weight: 300; margin-top: 14px; opacity: .9; }
-  .chips { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; }
-  .chips span { font-size: 15px; font-weight: 500; padding: 6px 16px; border-radius: 999px; border: 2px solid var(--white); }
-  .chips span:nth-child(1) { background: var(--yellow); border-color: var(--yellow); color: var(--navy); }
-
-  .block { border-radius: 30px; padding: 30px 24px; margin-top: 18px; position: relative; overflow: hidden; }
-  @media (max-width: 480px) { .block { padding: 26px 20px; border-radius: 26px; } }
-  .block h2 { font-size: clamp(28px, 7vw, 38px); font-weight: 800; line-height: 1.2; margin: 0 0 8px; letter-spacing: -.01em; }
-  .block .lead { font-size: 17px; font-weight: 300; margin: 0; }
-  .b-cyan { background: var(--cyan); color: var(--navy); }
-  .b-white { background: var(--white); color: var(--navy); }
-  .b-lime { background: var(--lime); color: var(--navy); }
-  .b-pink { background: var(--pink); color: var(--navy); }
-  .b-yellow { background: var(--yellow); color: var(--navy); }
-  .b-deep { background: var(--navy-deep); color: var(--white); }
-
-  .reveal-list { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 10px; }
-  .reveal-list li { display: flex; gap: 12px; align-items: center; font-size: 18px; font-weight: 500; background: var(--navy); color: var(--white); padding: 12px 16px; border-radius: 18px; }
-  .reveal-list li b { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; color: var(--navy); }
-
-  .dims { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 18px; }
-  @media (max-width: 400px) { .dims { grid-template-columns: 1fr; } }
-  .dim { padding: 14px 16px; border-radius: 20px; font-weight: 600; font-size: 16px; line-height: 1.3; min-height: 96px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px; }
-  .dim i { font-style: normal; font-size: 28px; line-height: 1; }
-
-  .scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 18px; }
-  .scale div { text-align: center; padding: 12px 4px 10px; border-radius: 18px; background: var(--navy); color: var(--white); font-size: 13px; line-height: 1.25; }
-  .scale b { display: block; font-size: 32px; font-weight: 900; line-height: 1.1; color: var(--cyan); }
-  @media (max-width: 400px) { .scale { gap: 5px; } .scale div { font-size: 12px; } .scale b { font-size: 26px; } }
-  .note { margin-top: 18px; padding: 14px 18px; border-radius: 18px; background: rgba(25,34,108,.1); font-size: 15px; }
-  .b-deep .note { background: rgba(255,255,255,.08); }
-
-  footer.page-foot { text-align: center; font-size: 13px; opacity: .6; padding: 28px 0 40px; }
-
-  /* ---------- หน้า 2 : Registration ---------- */
-  .reg { padding-top: 40px; padding-bottom: 48px; position: relative; }
-  .reg .big { font-size: clamp(42px, 12vw, 70px); }
+  /* registration */
   .id-input {
-    width: 100%; margin-top: 18px; padding: 18px 16px;
-    font: inherit; font-size: clamp(30px, 9vw, 42px); font-weight: 800; letter-spacing: .22em; text-align: center;
-    color: var(--navy); background: var(--white);
-    border: 4px solid var(--white); border-radius: 22px; outline: none;
-    transition: border-color .2s;
+    width: 100%; margin-top: 10px; padding: 16px;
+    font-family: "Itim", monospace; font-size: 32px; letter-spacing: .3em; text-align: center;
+    color: var(--ink); background: var(--card);
+    border: 2px solid var(--line); border-radius: 16px; outline: none;
   }
-  .id-input::placeholder { color: #c9cde6; }
-  .id-input:focus { border-color: var(--cyan); }
-  .id-input.invalid { border-color: var(--pink); }
-  .digits { display: flex; justify-content: center; gap: 6px; margin-top: 12px; }
-  .digits i { width: 22px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.2); transition: background .2s; }
-  .digits i.on { background: var(--lime); }
-  .err { color: var(--pink); font-size: 15px; font-weight: 500; margin-top: 8px; min-height: 22px; text-align: center; }
+  .id-input::placeholder { color: var(--hair); }
+  .id-input:focus { background: var(--sel); }
+  .id-input.invalid { border-color: var(--err); }
+  .err { color: var(--err); font-size: 14px; margin-top: 6px; min-height: 22px; }
   .privacy { list-style: none; padding: 0; margin: 8px 0; }
-  .privacy li { padding: 3px 0; }
+  .privacy li { padding: 2px 0; }
 
-  /* ---------- หน้า 3 : Quiz ---------- */
-  .quiz { padding-top: 20px; padding-bottom: 40px; min-height: 100vh; display: flex; flex-direction: column; }
-  .segs { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; }
-  .segs i { height: 5px; border-radius: 3px; background: currentColor; opacity: .22; transition: opacity .25s; }
-  .segs i.done { opacity: 1; }
-  .qtop { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-weight: 600; }
-  .back { background: none; border: 0; font: inherit; color: inherit; cursor: pointer; padding: 6px 0; font-weight: 500; }
+  /* quiz */
+  .qtop { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .back { background: none; border: 0; font: inherit; color: var(--ink-soft); cursor: pointer; padding: 4px 0; }
   .back:disabled { visibility: hidden; }
-  .qnum { font-size: 15px; }
-  .qdim { display: inline-flex; align-items: center; gap: 8px; margin-top: 26px; font-size: 15px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 5px 14px; border-radius: 999px; background: var(--navy); color: var(--white); align-self: flex-start; }
-  .qbig { font-size: clamp(64px, 18vw, 104px); font-weight: 900; line-height: 1; margin: 18px 0 0; letter-spacing: -.03em; }
-  .qtext { font-size: clamp(25px, 6.4vw, 34px); font-weight: 700; line-height: 1.35; margin: 10px 0 24px; letter-spacing: -.01em; min-height: 2.7em; }
+  .count { font-family: "Itim", sans-serif; font-size: 18px; }
+  .dots { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; }
+  .dots span { height: 8px; border-radius: 4px; background: var(--hair); transition: background .25s; }
+  .dots span.done { background: var(--accent); }
+  .dots span.now { outline: 2px solid var(--line); outline-offset: 1px; }
+  .qdim { display: inline-flex; gap: 6px; align-items: center; margin: 22px 0 6px; font-size: 14px; font-weight: 600; padding: 3px 12px; border-radius: 8px; border: 1.5px solid var(--line); transform: rotate(-1.5deg); }
+  .qtext { font-family: "Itim", sans-serif; font-size: clamp(22px, 5vw, 27px); line-height: 1.45; margin: 8px 0 20px; min-height: 2.9em; }
   .opts { display: grid; gap: 10px; }
   .opt {
-    display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%;
-    padding: 15px 22px; font: inherit; font-size: 18px; font-weight: 600; text-align: left;
-    color: var(--navy); background: var(--white);
-    border: 3px solid var(--white); border-radius: 999px; cursor: pointer;
-    transition: transform .12s, background .15s, color .15s, border-color .15s;
+    display: flex; align-items: center; gap: 12px; width: 100%;
+    padding: 12px 16px; font: inherit; font-size: 17px; font-weight: 500; text-align: left; color: var(--ink);
+    background: var(--card); border: 2px solid var(--line); border-radius: 14px; cursor: pointer;
+    transition: transform .1s, background .15s, box-shadow .1s;
   }
-  .opt:hover { transform: scale(1.02); }
-  .opt:active { transform: scale(.98); }
-  .opt .pts { font-size: 14px; font-weight: 500; opacity: .5; }
-  .opt.sel { background: var(--navy); color: var(--white); border-color: var(--navy); }
-  .opt.sel .pts { opacity: .8; }
-  .qanim > * { animation: rise .45s cubic-bezier(.2,.8,.2,1) both; }
-  .qanim > *:nth-child(2) { animation-delay: .04s; }
-  .qanim > *:nth-child(3) { animation-delay: .08s; }
-  .qanim > *:nth-child(4) { animation-delay: .12s; }
-  @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
-  .quiz .hint { margin-top: auto; padding-top: 22px; text-align: center; font-size: 14px; opacity: .7; }
-  .quiz .btn { background: var(--navy); color: var(--white); }
+  .opt:hover { background: var(--sel); }
+  .opt .box { flex: none; width: 24px; height: 24px; border: 2px solid var(--line); border-radius: 7px; display: grid; place-items: center; }
+  .opt .box svg { width: 16px; height: 16px; opacity: 0; transform: scale(.4) rotate(-20deg); transition: .18s; }
+  .opt.sel { background: var(--sel); box-shadow: 3px 3px 0 var(--line); transform: translate(-1px, -1px); }
+  .opt.sel .box { background: var(--accent); }
+  .opt.sel .box svg { opacity: 1; transform: none; }
+  .opt kbd { margin-left: auto; font-family: inherit; font-size: 12px; color: var(--ink-faint); }
+  @media (hover: none) { .opt kbd { display: none; } }
+  .qanim { animation: slide .3s ease both; }
+  @keyframes slide { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
 
-  /* ---------- หน้า 4 : Result ---------- */
-  .res { padding-top: 20px; padding-bottom: 20px; }
-  .slide { border-radius: 32px; padding: 34px 24px; margin-top: 16px; position: relative; overflow: hidden; opacity: 0; transform: translateY(30px) scale(.97); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1); }
-  .slide.in { opacity: 1; transform: none; }
-  @media (max-width: 480px) { .slide { padding: 30px 20px; border-radius: 28px; } }
-  .slide .over { position: relative; z-index: 2; font-size: 15px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-  .slide h2 { position: relative; z-index: 2; font-size: clamp(30px, 8vw, 44px); font-weight: 900; line-height: 1.15; margin: 8px 0 12px; letter-spacing: -.02em; }
-  .slide .body { position: relative; z-index: 2; font-size: 17px; font-weight: 400; margin: 0; }
+  /* result */
+  /* การ์ดสรุปผล: ให้เด่นที่สุดในหน้า */
+  .mode { text-align: center; position: relative; overflow: hidden; border-width: 3px; box-shadow: 9px 10px 0 #ffffff; padding-top: 30px; padding-bottom: 30px; }
+  .mode > * { position: relative; z-index: 1; }
+  .mode .confetti { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+  .mode .lead { font-weight: 600; margin: 12px 0 0; }
+  .mode-art { width: 150px; height: 150px; display: block; margin: 6px auto 0; animation: bob 4s ease-in-out infinite; }
+  .mode .name { font-family: "Itim", sans-serif; font-size: clamp(38px, 10vw, 54px); line-height: 1.1; margin: 4px 0 14px; }
+  .mode .score { display: inline-flex; align-items: baseline; gap: 6px; font-weight: 600; font-size: 16px; padding: 4px 18px; border: 2px solid var(--line); border-radius: 12px; background: #ffffff; margin-bottom: 14px; transform: rotate(-1.5deg); box-shadow: 3px 3px 0 var(--line); }
+  .mode .score b { font-family: "Itim", sans-serif; font-weight: 400; font-size: 36px; line-height: 1.1; }
+  .mode .desc { font-size: 17px; font-weight: 500; margin: 0 auto; max-width: 440px; }
+  .mode .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; text-align: left; }
+  .mode .pair div { background: #ffffff; border: 2px solid var(--line); border-radius: 14px; padding: 10px 12px; font-size: 13px; line-height: 1.35; }
+  .mode .pair b { display: block; font-family: "Itim", sans-serif; font-weight: 400; font-size: 18px; margin-top: 2px; }
+  @media (max-width: 380px) { .mode .pair { grid-template-columns: 1fr; } }
 
-  .mode-slide { text-align: center; padding-top: 42px; padding-bottom: 42px; min-height: 520px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .mode-slide .emoji { position: relative; z-index: 2; font-size: 96px; line-height: 1; margin: 18px 0 6px; animation: wobble 5s ease-in-out infinite; }
-  .mode-slide .mode-name { position: relative; z-index: 2; font-size: clamp(44px, 12.5vw, 74px); font-weight: 900; line-height: 1.05; letter-spacing: -.03em; margin: 6px 0 16px; }
-  .scorebox { position: relative; z-index: 2; display: inline-flex; align-items: baseline; gap: 6px; background: var(--navy); color: var(--white); padding: 8px 22px; border-radius: 999px; font-weight: 600; }
-  .scorebox b { font-size: 34px; font-weight: 900; line-height: 1.2; }
-  .mode-slide .body { max-width: 440px; margin-top: 16px; font-weight: 500; }
+  .save-card { text-align: center; }
+  .save-card .btn { background: var(--navy); color: #ffffff; }
 
-  .bars { display: grid; gap: 16px; margin-top: 18px; position: relative; z-index: 2; }
-  .bar-row .lbl { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 6px; }
-  .bar-row .lbl span { font-size: 16px; font-weight: 500; }
-  .bar-row .lbl b { font-size: 28px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
-  .bar-track { height: 18px; border-radius: 999px; background: rgba(255,255,255,.12); overflow: hidden; }
-  .bar-fill { height: 100%; width: 0; border-radius: inherit; transition: width 1.2s cubic-bezier(.2,.8,.2,1); }
-
-  .insight-emoji { position: relative; z-index: 2; font-size: 60px; line-height: 1; margin: 10px 0 6px; }
-  .dimname { position: relative; z-index: 2; display: inline-block; font-size: 15px; font-weight: 700; padding: 4px 14px; border-radius: 999px; background: var(--navy); color: var(--white); margin-top: 4px; }
-
-  .save-slide { text-align: center; }
-  .save-slide .btn { margin-top: 18px; }
-  .sending { font-size: 13px; opacity: .6; text-align: center; margin-top: 14px; min-height: 20px; }
-
-  /* ---------- Modal แสดงภาพที่บันทึก ---------- */
-  .modal { position: fixed; inset: 0; z-index: 50; background: rgba(9, 12, 40, .88); display: none; align-items: center; justify-content: center; padding: 16px; }
+  /* Modal แสดงรูปผลลัพธ์ */
+  .modal { position: fixed; inset: 0; z-index: 50; background: rgba(12, 17, 58, .9); display: none; align-items: center; justify-content: center; padding: 16px; }
   .modal.open { display: flex; }
-  .modal-inner { width: 100%; max-width: 380px; max-height: 100%; display: flex; flex-direction: column; gap: 12px; }
-  .modal img { width: 100%; max-height: calc(100vh - 220px); object-fit: contain; border-radius: 20px; background: var(--navy); }
-  .modal .tip { text-align: center; font-size: 14px; opacity: .8; margin: 0; }
-  .modal .btn { margin-top: 0; }
+  .modal-inner { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 12px; }
+  .modal img { width: 100%; max-height: calc(100vh - 230px); object-fit: contain; border-radius: 18px; border: 2px solid #ffffff; background: var(--navy); }
+  .modal .tip { text-align: center; font-size: 14px; color: var(--on-paper-soft); margin: 0; }
   .modal .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .modal .row .btn { font-size: 17px; padding: 14px 10px; }
+  .modal .btn { margin-top: 0; }
+  .modal .link { color: #ffffff; margin-top: 0; }
+  .bars { display: grid; gap: 14px; margin-top: 12px; }
+  .bar-row .lbl { display: flex; justify-content: space-between; gap: 10px; font-size: 15px; font-weight: 500; margin-bottom: 5px; }
+  .bar-row .lbl b { font-family: "Itim", sans-serif; font-weight: 400; font-size: 19px; line-height: 1.2; }
+  .bar-track { height: 16px; border-radius: 8px; border: 2px solid var(--line); background: var(--card); overflow: hidden; }
+  .bar-fill { height: 100%; width: 0; border-right: 2px solid var(--line); transition: width 1s cubic-bezier(.3,.9,.3,1); }
+  .bar-fill.zero { border-right: 0; }
+  .insight { display: flex; gap: 14px; align-items: flex-start; }
+  .insight .ic { flex: none; width: 54px; height: 54px; border-radius: 16px; border: 2px solid var(--line); display: grid; place-items: center; font-size: 26px; transform: rotate(-4deg); }
+  .insight .tag { display: inline-block; font-size: 13px; font-weight: 600; padding: 1px 10px; border-radius: 6px; border: 1.5px solid var(--line); background: #ffd23f; margin-bottom: 6px; transform: rotate(-1deg); }
+  .sending { font-size: 13px; color: var(--on-paper-soft); text-align: center; margin-top: 16px; min-height: 20px; }
+  .footer-note { text-align: center; font-size: 14px; color: var(--on-paper-soft); margin-top: 8px; }
 </style>
 </head>
 <body>
 
-<!-- ===== หน้า 1 : Landing ===== -->
-<section class="screen active" id="s-landing">
-  <div class="wrap">
-    <div class="hero">
-      <svg class="shape spin" style="width:170px;height:170px;right:-50px;top:10px" viewBox="0 0 100 100" aria-hidden="true"><path fill="#01a5dc" d="M50 0l9 21 22-9-9 22 21 9-21 9 9 22-22-9-9 21-9-21-22 9 9-22-21-9 21-9-9-22 22 9z"/></svg>
-      <svg class="shape wobble" style="width:90px;height:90px;right:40px;top:170px" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#ff5fa2"/></svg>
-      <svg class="shape" style="width:130px;height:60px;right:-10px;top:290px" viewBox="0 0 130 60" aria-hidden="true"><path d="M4 40 q16-32 32 0 t32 0 t32 0 t28 0" fill="none" stroke="#c8f53c" stroke-width="10" stroke-linecap="round"/></svg>
+<!-- ลายเส้นที่ใช้ซ้ำ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="squig" viewBox="0 0 200 14" preserveAspectRatio="none">
+      <path d="M2 9 C 20 3, 35 13, 55 7 S 90 3, 110 8 S 150 12, 170 6 S 192 5, 198 8" fill="none" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" opacity=".9"/>
+    </symbol>
+    <symbol id="tick" viewBox="0 0 16 16"><path d="M3 8.5 L6.5 12 L13 4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
 
-      <span class="kicker">World Mental Health Day</span>
-      <div class="big"><span class="hl1">ช่วงนี้</span><br><span class="hl2">ใจคุณ</span><br><span class="hl3">เป็นยังไง?</span></div>
-      <p class="title-en">🧠 Mental Wellness Check-In</p>
-      <p class="intro">เนื่องในวันสุขภาพจิตโลก ชวนคุณมาเช็กอินตัวเองผ่านแบบทดสอบสั้น ๆ ที่จะช่วยสะท้อนภาพรวมสุขภาวะของคุณในช่วงนี้</p>
-      <div class="chips"><span>24 ข้อ · 3–5 นาที</span><span>ผลลัพธ์เห็นเฉพาะคุณ</span></div>
-    </div>
+<main class="wrap">
 
-    <div class="block b-cyan">
-      <h2>แล้วมาดูกันว่า...</h2>
-      <ul class="reveal-list">
-        <li><b style="background:var(--lime)">1</b>ช่วงนี้คุณกำลังอยู่ในโหมดไหน</li>
-        <li><b style="background:var(--yellow)">2</b>จุดแข็งที่ช่วยเติมพลังให้คุณคืออะไร</li>
-        <li><b style="background:var(--pink)">3</b>ด้านไหนที่อาจต้องการการดูแลเพิ่มอีกนิด</li>
+  <!-- ===== หน้า 1 : Landing ===== -->
+  <section class="screen active" id="s-landing">
+    <div class="card">
+      <div class="hero">
+        <div>
+          <span class="tape">World Mental Health Day</span>
+          <h1>Mental Wellness Check-In</h1>
+          <h2 class="soft" style="margin-top:6px"><span class="scribble">ช่วงนี้ใจคุณเป็นยังไง?<svg><use href="#squig"/></svg></span></h2>
+        </div>
+        <svg class="hero-art" viewBox="0 0 100 100" aria-hidden="true">
+          <g stroke="var(--line)" stroke-width="2.5" stroke-linecap="round" fill="none">
+            <path d="M50 6v10M50 84v10M6 50h10M84 50h10M19 19l7 7M74 74l7 7M81 19l-7 7M26 74l-7 7"/>
+          </g>
+          <circle cx="50" cy="50" r="26" fill="var(--d4s)" stroke="var(--line)" stroke-width="2.5"/>
+          <circle cx="41" cy="47" r="2.8" fill="var(--line)"/><circle cx="59" cy="47" r="2.8" fill="var(--line)"/>
+          <path d="M42 57 q8 7 16 0" fill="none" stroke="var(--line)" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="35" cy="55" r="4" fill="var(--d5)" opacity=".45"/><circle cx="65" cy="55" r="4" fill="var(--d5)" opacity=".45"/>
+        </svg>
+      </div>
+      <p class="soft" style="margin-top:14px">เนื่องในวันสุขภาพจิตโลก ชวนคุณมาเช็กอินตัวเองผ่านแบบทดสอบสั้น ๆ ที่จะช่วยสะท้อนภาพรวมสุขภาวะของคุณในช่วงนี้</p>
+      <div class="facts"><span>24 ข้อ</span><span>3–5 นาที</span><span>ผลลัพธ์เห็นแค่คุณคนเดียว</span></div>
+      <p style="margin:0">ทำเสร็จแล้วมาดูกันว่า...</p>
+      <ul class="list">
+        <li>ช่วงนี้คุณกำลังอยู่ในโหมดไหน</li>
+        <li>จุดแข็งที่ช่วยเติมพลังให้คุณคืออะไร</li>
+        <li>มีด้านไหนที่อาจต้องการการดูแลเพิ่มอีกนิด</li>
       </ul>
     </div>
 
-    <div class="block b-white">
-      <h2>📊 Your Well-being Profile</h2>
-      <p class="lead">รายงานสุขภาวะส่วนบุคคลใน 6 มิติ</p>
+    <div class="card c-cyan">
+      <h2>คุณจะได้รับ Your Well-being Profile</h2>
+      <p class="soft" style="margin:0">รายงานสุขภาวะส่วนตัวใน 6 มิติ</p>
       <div class="dims" id="dimList"></div>
     </div>
 
-    <div class="block b-lime">
+    <div class="card pop-p">
       <h2>วิธีตอบ</h2>
-      <p class="lead">เลือกคำตอบที่ตรงกับตัวคุณมากที่สุด โดยอ้างอิงจากช่วง 2–4 สัปดาห์ที่ผ่านมา</p>
+      <p class="soft" style="margin:0">เลือกคำตอบที่ตรงกับตัวคุณมากที่สุด โดยนึกถึงช่วง 2–4 สัปดาห์ที่ผ่านมา</p>
       <div class="scale" id="scaleTable"></div>
       <div class="note"><b>ไม่มีคำตอบถูกหรือผิด</b> แบบทดสอบนี้จัดทำขึ้นเพื่อให้พนักงานได้ลองสำรวจตัวเองและสร้างความตระหนักรู้เกี่ยวกับสุขภาวะของตนเอง</div>
-      <button class="btn white" data-go="s-register" style="background:var(--navy);color:var(--white)">เริ่มทำแบบทดสอบ <span class="arrow">→</span></button>
+      <button class="btn" data-go="s-register">เริ่มทำแบบทดสอบ</button>
     </div>
-    <footer class="page-foot">Mental Wellness Check-In · World Mental Health Day</footer>
-  </div>
-</section>
+  </section>
 
-<!-- ===== หน้า 2 : Registration ===== -->
-<section class="screen" id="s-register">
-  <div class="wrap reg">
-    <svg class="shape spin rev" style="width:120px;height:120px;right:-30px;top:20px" viewBox="0 0 100 100" aria-hidden="true"><path fill="#ffd23f" d="M50 0l9 21 22-9-9 22 21 9-21 9 9 22-22-9-9 21-9-21-22 9 9-22-21-9 21-9-9-22 22 9z"/></svg>
-    <span class="kicker" style="display:inline-block;font-size:14px;font-weight:600;letter-spacing:.08em;color:var(--navy);background:var(--lime);padding:4px 14px;border-radius:999px;position:relative;z-index:2">STEP 1 / 2</span>
-    <div class="big" style="position:relative;z-index:2">ก่อนเริ่ม<br><span class="hl1">ขอรหัสหน่อย</span></div>
-    <p style="font-size:18px;font-weight:300">กรุณากรอกรหัสพนักงาน 8 หลัก</p>
-    <input id="empId" class="id-input" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="00000000" aria-label="รหัสพนักงาน 8 หลัก">
-    <div class="digits" id="digits"></div>
-    <div class="err" id="empErr"></div>
-    <div class="block b-deep" style="margin-top:10px">
-      <b>หมายเหตุ</b> รหัสพนักงานจะถูกใช้เพื่อ
-      <ul class="privacy">
-        <li>✅ บันทึกจำนวนผู้เข้าร่วมกิจกรรม</li>
-        <li>❌ ไม่แสดงผลลัพธ์ต่อหัวหน้างานหรือบุคคลอื่น</li>
-      </ul>
-      ผลลัพธ์จะแสดงเฉพาะผู้ทำแบบทดสอบเท่านั้น
+  <!-- ===== หน้า 2 : Registration ===== -->
+  <section class="screen" id="s-register">
+    <div class="card pop-y">
+      <span class="tape">ก่อนเริ่มกันนิดนึง</span>
+      <h1 style="font-size:32px">กรอกรหัสพนักงาน</h1>
+      <p class="soft" style="margin:0">รหัสพนักงาน 8 หลัก</p>
+      <input id="empId" class="id-input" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="00000000" aria-label="รหัสพนักงาน 8 หลัก">
+      <div class="err" id="empErr"></div>
+      <div class="note">
+        <b>รหัสพนักงานจะถูกใช้เพื่อ</b>
+        <ul class="privacy">
+          <li>✅ บันทึกจำนวนผู้เข้าร่วมกิจกรรม</li>
+          <li>❌ ไม่แสดงผลลัพธ์ต่อหัวหน้างานหรือบุคคลอื่น</li>
+        </ul>
+        ผลลัพธ์จะแสดงเฉพาะผู้ทำแบบทดสอบเท่านั้น
+      </div>
+      <button class="btn" id="startBtn" disabled>เริ่มตอบคำถาม</button>
+      <button class="link" data-go="s-landing">กลับหน้าแรก</button>
     </div>
-    <button class="btn" id="startBtn" disabled>เริ่มตอบคำถาม <span class="arrow">→</span></button>
-    <button class="link" data-go="s-landing">กลับหน้าแรก</button>
-  </div>
-</section>
+  </section>
 
-<!-- ===== หน้า 3 : Quiz ===== -->
-<section class="screen" id="s-quiz">
-  <div class="wrap quiz">
-    <div class="segs" id="segs"></div>
-    <div class="qtop">
-      <button class="back" id="prevBtn">← ย้อนกลับ</button>
-      <span class="qnum" id="qCount">1 / 24</span>
+  <!-- ===== หน้า 3 : Quiz ===== -->
+  <section class="screen" id="s-quiz">
+    <div class="card" id="quizCard">
+      <div class="qtop">
+        <button class="back" id="prevBtn">← ข้อก่อนหน้า</button>
+        <span class="count" id="qCount">1 / 24</span>
+      </div>
+      <div class="dots" id="qDots"></div>
+      <div id="qBody">
+        <span class="qdim" id="qDim"></span>
+        <div class="qtext" id="qText"></div>
+        <div class="opts" id="qOpts"></div>
+      </div>
+      <button class="btn" id="submitBtn" style="display:none">ดูผลลัพธ์ของฉัน</button>
+      <p class="faint" style="margin:18px 0 0;text-align:center">ตอบตามความรู้สึกในช่วง 2–4 สัปดาห์ที่ผ่านมา</p>
     </div>
-    <div id="qBody" style="display:flex;flex-direction:column">
-      <span class="qdim" id="qDim"></span>
-      <div class="qbig" id="qBig">01</div>
-      <div class="qtext" id="qText"></div>
-      <div class="opts" id="qOpts"></div>
-    </div>
-    <button class="btn" id="submitBtn" style="display:none">ดูผลลัพธ์ของฉัน ✨</button>
-    <p class="hint">ช่วงนี้ใจคุณเป็นยังไง? · ตอบตามความรู้สึกในช่วง 2–4 สัปดาห์ที่ผ่านมา</p>
-  </div>
-</section>
+  </section>
 
-<!-- ===== หน้า 4 : Report ===== -->
-<section class="screen" id="s-result">
-  <div class="wrap res">
-    <div class="slide mode-slide" id="modeSlide">
-      <svg class="shape spin" style="width:220px;height:220px;left:-70px;top:-70px;opacity:.9" viewBox="0 0 100 100" aria-hidden="true"><path fill="#19226c" d="M50 0l9 21 22-9-9 22 21 9-21 9 9 22-22-9-9 21-9-21-22 9 9-22-21-9 21-9-9-22 22 9z"/></svg>
-      <svg class="shape wobble" style="width:120px;height:120px;right:-30px;bottom:-20px" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#ffffff" opacity=".85"/></svg>
-      <div class="over">📊 Your Well-being Profile</div>
-      <div class="body" style="margin-top:6px">ช่วงนี้คุณอยู่ในโหมด</div>
-      <div class="emoji" id="rEmoji"></div>
-      <div class="mode-name" id="rMode"></div>
-      <div class="scorebox">คะแนนรวม <b id="rScore">0</b> / 96</div>
-      <p class="body" id="rDesc"></p>
+  <!-- ===== หน้า 4 : Report ===== -->
+  <section class="screen" id="s-result">
+    <div class="card mode" id="rModeCard">
+      <svg class="confetti" viewBox="0 0 400 600" preserveAspectRatio="none" aria-hidden="true">
+        <g stroke="#19226c" stroke-width="2.5" stroke-linecap="round" fill="none">
+          <path d="M30 60 l14 -8" /><path d="M360 90 l10 12" /><path d="M40 420 l12 10" /><path d="M350 470 l-14 6" />
+        </g>
+        <circle cx="70" cy="140" r="7" fill="#ffffff" stroke="#19226c" stroke-width="2"/>
+        <circle cx="340" cy="200" r="9" fill="#ff4f93" stroke="#19226c" stroke-width="2"/>
+        <circle cx="330" cy="40" r="6" fill="#c8f53c" stroke="#19226c" stroke-width="2"/>
+        <rect x="24" y="300" width="14" height="14" rx="3" fill="#ffd23f" stroke="#19226c" stroke-width="2" transform="rotate(20 31 307)"/>
+        <rect x="355" y="330" width="12" height="12" rx="3" fill="#ffffff" stroke="#19226c" stroke-width="2" transform="rotate(-15 361 336)"/>
+      </svg>
+      <span class="tape">Your Well-being Profile</span>
+      <p class="lead">ช่วงนี้คุณอยู่ในโหมด</p>
+      <div id="rArt"></div>
+      <div class="name" id="rMode"></div>
+      <span class="score">คะแนนรวม <b id="rScore">0</b> / 96</span>
+      <p class="desc" id="rDesc"></p>
+      <div class="pair">
+        <div>🌟 จุดเด่นของคุณ<b id="rPairHi"></b></div>
+        <div>💡 ควรเติมพลัง<b id="rPairLo"></b></div>
+      </div>
     </div>
 
-    <div class="slide b-deep">
-      <div class="over" style="color:var(--cyan)">📈 Well-being Profile</div>
-      <h2>6 มิติสุขภาวะของคุณ</h2>
+    <div class="card pop-l">
+      <h2><span class="scribble">Well-being Profile<svg><use href="#squig"/></svg></span></h2>
       <div class="bars" id="rBars"></div>
     </div>
 
-    <div class="slide" id="strSlide">
-      <div class="over">🌟 จุดที่โดดเด่นที่สุดของคุณ</div>
-      <div class="insight-emoji" id="rStrIc"></div>
-      <span class="dimname" id="rStrDim"></span>
-      <h2 id="rStrTitle"></h2>
-      <p class="body" id="rStrText"></p>
+    <div class="card" id="rStrCard">
+      <div class="insight">
+        <div class="ic" id="rStrIc"></div>
+        <div>
+          <div class="tag">🌟 จุดที่โดดเด่นที่สุดของคุณ</div>
+          <h3 id="rStrTitle"></h3>
+          <p class="soft" id="rStrText" style="margin:0"></p>
+        </div>
+      </div>
     </div>
 
-    <div class="slide b-white" id="growSlide">
-      <div class="over">💡 มิติที่ควรเติมพลัง</div>
-      <div class="insight-emoji" id="rGrowIc"></div>
-      <span class="dimname" id="rGrowDim"></span>
-      <h2 id="rGrowTitle"></h2>
-      <p class="body" id="rGrowText"></p>
+    <div class="card" id="rGrowCard">
+      <div class="insight">
+        <div class="ic" id="rGrowIc"></div>
+        <div>
+          <div class="tag">💡 มิติที่ควรเติมพลัง</div>
+          <h3 id="rGrowTitle"></h3>
+          <p class="soft" id="rGrowText" style="margin:0"></p>
+        </div>
+      </div>
     </div>
 
-    <div class="slide b-cyan save-slide">
+    <div class="card c-cyan save-card">
       <h2>เก็บผลลัพธ์ไว้ดูเองนะ 📸</h2>
-      <p class="body">บันทึกเป็นรูปภาพลงเครื่อง (ไม่มีรหัสพนักงานในรูป)</p>
-      <button class="btn" id="saveBtn" style="background:var(--navy);color:var(--white)">บันทึกผลลัพธ์เป็นรูปภาพ ⬇</button>
-      <button class="link" id="againBtn" style="color:var(--navy)">ทำแบบทดสอบอีกครั้ง</button>
+      <p class="soft" style="margin:0">บันทึกเป็นรูปภาพลงเครื่อง (ในรูปไม่มีรหัสพนักงาน)</p>
+      <button class="btn" id="saveBtn">บันทึกผลลัพธ์เป็นรูปภาพ</button>
     </div>
 
     <div class="sending" id="sendStatus"></div>
-    <footer class="page-foot" style="padding-top:8px">ผลลัพธ์นี้เป็นเพียงการสำรวจตนเองเบื้องต้น ไม่ใช่การวินิจฉัยทางการแพทย์<br>ถ้ารู้สึกไม่ไหว คุยกับคนที่ไว้ใจได้เสมอ หรือโทรสายด่วนสุขภาพจิต 1323 💙</footer>
-  </div>
-</section>
+    <p class="footer-note">ผลลัพธ์นี้เป็นเพียงการสำรวจตนเองเบื้องต้น ไม่ใช่การวินิจฉัยทางการแพทย์<br>ถ้ารู้สึกไม่ไหว คุยกับคนที่ไว้ใจได้เสมอ หรือโทรสายด่วนสุขภาพจิต 1323</p>
+  </section>
 
-<!-- ===== Modal รูปผลลัพธ์ ===== -->
+</main>
+
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="รูปผลลัพธ์">
   <div class="modal-inner">
     <img id="shareImg" alt="รูปสรุปผล Well-being Profile">
-    <p class="tip" id="shareTip">กดดาวน์โหลด หรือกดค้างที่รูปเพื่อบันทึก</p>
-    <div class="row">
+    <p class="tip">กดดาวน์โหลด หรือกดค้างที่รูปเพื่อบันทึกลงเครื่อง</p>
+    <div class="row" id="modalRow">
       <button class="btn" id="dlBtn">ดาวน์โหลด</button>
-      <button class="btn cyan" id="shareBtn">แชร์</button>
+      <button class="btn" id="shareBtn" style="background:#ffd23f">แชร์</button>
     </div>
-    <button class="link" id="closeModal" style="margin-top:0">ปิด</button>
+    <button class="link" id="closeModal">ปิด</button>
   </div>
 </div>
 
 <script>
   // ============ CONFIG ============
-  // วาง URL ของ Google Apps Script Web App (ลงท้ายด้วย /exec) ที่นี่
+  // วาง URL ของ Google Apps Script Web App (ลงท้ายด้วย /exec) ที่นี่ — เว้นว่างไว้หากเสิร์ฟผ่าน Apps Script โดยตรง
   const SHEET_ENDPOINT = "";
 
   // ============ DATA ============
@@ -368,24 +402,23 @@
     { v: 0, t: "ไม่ใช่เลย" },
   ];
 
-  // bg = สีพื้นตอนทำข้อในมิตินั้น, fg = สีตัวอักษรบนพื้นนั้น
   const DIMS = [
-    { key: "emotional", icon: "🧠", name: "Emotional Balance", bg: "#01a5dc", fg: "#19226c",
+    { key: "emotional", icon: "🧠", name: "Emotional Balance", color: "var(--d1)", tint: "var(--d1s)",
       strong: ["คุณเข้าใจอารมณ์ของตัวเองได้ดี", "คุณสามารถรับรู้ความรู้สึกของตัวเองและจัดการกับอารมณ์ต่าง ๆ ได้ค่อนข้างดี แม้อาจมีวันที่ไม่ง่าย แต่คุณมักกลับมาตั้งหลักและเดินหน้าต่อได้"],
       grow:   ["ลองฟังเสียงของตัวเองให้มากขึ้น", "ช่วงนี้อาจมีหลายเรื่องเข้ามาพร้อมกันจนไม่มีเวลาเช็กความรู้สึกของตัวเอง ลองหยุดสักนิดเพื่อสำรวจว่าในตอนนี้คุณกำลังรู้สึกอย่างไร"] },
-    { key: "stress", icon: "🌊", name: "Stress Management", bg: "#7b61ff", fg: "#ffffff",
+    { key: "stress", icon: "🌊", name: "Stress Management", color: "var(--d2)", tint: "var(--d2s)",
       strong: ["คุณรับมือกับแรงกดดันได้ดี", "เมื่อมีเรื่องให้กังวลหรือเครียด คุณสามารถจัดการกับสถานการณ์ต่าง ๆ ได้โดยไม่ปล่อยให้ความเครียดเข้ามาครอบงำชีวิตมากเกินไป"],
       grow:   ["ถึงเวลาพักจากความกังวลบ้าง", "คุณอาจกำลังแบกรับหลายเรื่องไว้พร้อมกัน ลองหาเวลาผ่อนคลายในแบบที่เหมาะกับตัวเอง และไม่จำเป็นต้องจัดการทุกเรื่องให้สมบูรณ์แบบเสมอไป"] },
-    { key: "resilience", icon: "🌱", name: "Resilience", bg: "#c8f53c", fg: "#19226c",
+    { key: "resilience", icon: "🌱", name: "Resilience", color: "var(--d3)", tint: "var(--d3s)",
       strong: ["คุณล้มแล้วลุกได้เสมอ", "เมื่อเจออุปสรรคหรือเรื่องที่ไม่เป็นไปตามแผน คุณสามารถปรับตัว เรียนรู้ และกลับมาเดินหน้าต่อได้ ความสามารถนี้ช่วยให้คุณรับมือกับความเปลี่ยนแปลงได้ดี"],
       grow:   ["ค่อย ๆ ไปทีละก้าวก็ได้", "เมื่อเจอเรื่องยากหรือผิดหวัง อย่ากดดันตัวเองมากเกินไป การให้เวลากับตัวเองในการตั้งหลักก็เป็นส่วนหนึ่งของการก้าวไปข้างหน้าเช่นกัน"] },
-    { key: "energy", icon: "⚡", name: "Energy & Vitality", bg: "#ffd23f", fg: "#19226c",
+    { key: "energy", icon: "⚡", name: "Energy & Vitality", color: "var(--d4)", tint: "var(--d4s)",
       strong: ["คุณมีพลังพร้อมใช้ชีวิต", "ช่วงนี้คุณมีพลังงานทั้งทางกายและใจค่อนข้างดี ทำให้ยังมีแรงสำหรับสิ่งที่ต้องทำ รวมถึงสิ่งที่คุณอยากทำเพื่อความสุขของตัวเอง"],
       grow:   ["แบตเตอรี่ของคุณอาจต้องการการชาร์จเพิ่ม", "ช่วงนี้คุณอาจใช้พลังงานไปมากกว่าที่เติมกลับมา ลองให้ความสำคัญกับการพักผ่อน การนอนหลับ หรือกิจกรรมที่ช่วยให้รู้สึกสดชื่นขึ้น"] },
-    { key: "connection", icon: "🤝", name: "Social Connection", bg: "#ff5fa2", fg: "#19226c",
+    { key: "connection", icon: "🤝", name: "Social Connection", color: "var(--d5)", tint: "var(--d5s)",
       strong: ["คุณมีคนรอบตัวที่เป็นพลังใจ", "คุณมีความสัมพันธ์ที่ดีและมีคนที่พร้อมรับฟัง สนับสนุน หรืออยู่ข้าง ๆ ในวันที่ต้องการ ทำให้คุณไม่ต้องรับมือกับทุกอย่างเพียงลำพัง"],
       grow:   ["ไม่จำเป็นต้องรับมือทุกอย่างคนเดียว", "บางครั้งการพูดคุยหรือขอความช่วยเหลือจากคนที่ไว้ใจ อาจช่วยแบ่งเบาความรู้สึกได้มากกว่าที่คิด ลองเปิดพื้นที่ให้ตัวเองได้เชื่อมโยงกับคนรอบข้างมากขึ้น"] },
-    { key: "meaning", icon: "🎯", name: "Meaning & Positive Mindset", bg: "#ff8a3d", fg: "#19226c",
+    { key: "meaning", icon: "🎯", name: "Meaning & Positive Mindset", color: "var(--d6)", tint: "var(--d6s)",
       strong: ["คุณยังมองเห็นความหมายและความหวัง", "คุณมองเห็นคุณค่าของสิ่งที่ทำ และยังมีสิ่งที่ตั้งตารอหรืออยากทำต่อไป มุมมองแบบนี้ช่วยสร้างพลังใจให้กับชีวิตในแต่ละวัน"],
       grow:   ["ลองกลับมามองหาสิ่งที่ทำให้ใจมีพลัง", "ช่วงนี้คุณอาจกำลังโฟกัสกับเรื่องที่ต้องทำจนลืมสิ่งที่ทำให้รู้สึกตื่นเต้นหรือมีความหมาย ลองหาเวลาทำสิ่งที่ชอบ หรือกลับไปหาสิ่งที่เคยสร้างแรงบันดาลใจให้ตัวเอง"] },
   ];
@@ -418,19 +451,31 @@
     "โดยรวมแล้วฉันรู้สึกพอใจกับชีวิตในตอนนี้",
   ];
 
+  // ภาพวาดประจำโหมด (พระอาทิตย์ / มีเมฆ / เมฆ / ฝน) พร้อมหน้ายิ้ม
+  const L = 'stroke="var(--line)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"';
+  const face = (x, y) => `<circle cx="${x - 8}" cy="${y}" r="2.6" fill="var(--line)"/><circle cx="${x + 8}" cy="${y}" r="2.6" fill="var(--line)"/><path d="M${x - 6} ${y + 8} q6 5 12 0" fill="none" ${L}/>`;
+  const cloud = (fill) => `<path d="M28 88 h58 a16 16 0 0 0 -4 -31 a22 22 0 0 0 -41 -6 a17 17 0 0 0 -13 37 z" fill="${fill}" ${L}/>`;
+  const ART = {
+    sun: `<svg class="mode-art" viewBox="0 0 120 120"><g fill="none" ${L}><path d="M60 8v12M60 100v12M8 60h12M100 60h12M23 23l9 9M88 88l9 9M97 23l-9 9M32 88l-9 9"/></g><circle cx="60" cy="60" r="30" fill="#fff6c2" ${L}/>${face(60, 56)}</svg>`,
+    partly: `<svg class="mode-art" viewBox="0 0 120 120"><g fill="none" ${L}><path d="M44 8v9M16 36h9M24 16l7 7M64 16l-7 7"/></g><circle cx="44" cy="40" r="20" fill="#ffd23f" ${L}/>${cloud("var(--card)")}${face(62, 72)}</svg>`,
+    cloudy: `<svg class="mode-art" viewBox="0 0 120 120">${cloud("#ffffff")}${face(60, 72)}</svg>`,
+    rain: `<svg class="mode-art" viewBox="0 0 120 120"><path d="M28 78 h58 a16 16 0 0 0 -4 -31 a22 22 0 0 0 -41 -6 a17 17 0 0 0 -13 37 z" fill="#ffffff" ${L}/><circle cx="52" cy="60" r="2.6" fill="var(--line)"/><circle cx="68" cy="60" r="2.6" fill="var(--line)"/><path d="M55 69 q5 -3 10 0" fill="none" ${L}/><g fill="none" stroke="var(--d2)" stroke-width="3" stroke-linecap="round"><path d="M40 90l-4 10M60 90l-4 10M80 90l-4 10"/></g><path d="M88 96 q6 -12 12 0 q-6 6 -12 0z" fill="var(--d5s)" ${L}/></svg>`,
+  };
+
   const MODES = [
-    { min: 77, emoji: "🌞", name: "Recharge Ready", bg: "#c8f53c", desc: "คุณกำลังอยู่ในช่วงที่ค่อนข้างสมดุล ทั้งด้านพลังงาน อารมณ์ และความสัมพันธ์" },
-    { min: 58, emoji: "🌤️", name: "Need a Little Pause", bg: "#01a5dc", desc: "หลายอย่างกำลังไปได้ดี แต่บางด้านอาจเริ่มใช้พลังงานมากกว่าที่เติมกลับมา" },
-    { min: 39, emoji: "☁️", name: "Running Low Battery", bg: "#ffd23f", desc: "ช่วงนี้อาจมีหลายเรื่องที่ใช้พลังงานทั้งทางกายและใจมากกว่าปกติ" },
-    { min: 0,  emoji: "🌧️", name: "Time to Take Care of Yourself", bg: "#ff5fa2", desc: "คุณอาจกำลังอยู่ในช่วงที่ต้องการการพักและการดูแลตัวเองมากขึ้น" },
+    { min: 77, art: "sun",    bg: "#ffd23f", name: "Recharge Ready", desc: "คุณกำลังอยู่ในช่วงที่ค่อนข้างสมดุล ทั้งด้านพลังงาน อารมณ์ และความสัมพันธ์" },
+    { min: 58, art: "partly", bg: "#01a5dc", name: "Need a Little Pause", desc: "หลายอย่างกำลังไปได้ดี แต่บางด้านอาจเริ่มใช้พลังงานมากกว่าที่เติมกลับมา" },
+    { min: 39, art: "cloudy", bg: "#b6a8ff", name: "Running Low Battery", desc: "ช่วงนี้อาจมีหลายเรื่องที่ใช้พลังงานทั้งทางกายและใจมากกว่าปกติ" },
+    { min: 0,  art: "rain",   bg: "#ff8fc0", name: "Time to Take Care of Yourself", desc: "คุณอาจกำลังอยู่ในช่วงที่ต้องการการพักและการดูแลตัวเองมากขึ้น" },
   ];
 
   // ============ STATE ============
-  const state = { empId: "", sessionId: "", answers: new Array(24).fill(null), idx: 0, result: null };
+  const state = { empId: "", sessionId: "", answers: new Array(24).fill(null), idx: 0 };
   const $ = (id) => document.getElementById(id);
 
   // ============ SHEET LOGGING ============
   function logToSheet(payload) {
+    // เสิร์ฟผ่าน Apps Script โดยตรง (HtmlService)
     if (typeof google !== "undefined" && google.script && google.script.run) {
       return new Promise((res) => google.script.run.withSuccessHandler(() => res(true)).withFailureHandler(() => res(false)).logEvent(payload));
     }
@@ -444,30 +489,22 @@
   }
 
   // ============ NAV ============
-  function setTheme(bg, fg) {
-    document.body.style.setProperty("--bg", bg);
-    document.body.style.setProperty("--fg", fg);
-    document.querySelector('meta[name="theme-color"]').setAttribute("content", bg);
-  }
   function go(id) {
     document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("active", s.id === id));
-    window.scrollTo({ top: 0 });
-    if (id !== "s-quiz") setTheme("#19226c", "#ffffff");
-    if (id === "s-register") setTimeout(() => $("empId").focus(), 200);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (id === "s-register") setTimeout(() => $("empId").focus(), 300);
   }
   document.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => go(b.dataset.go)));
 
   // ============ LANDING ============
-  $("dimList").innerHTML = DIMS.map((d) => `<div class="dim" style="background:${d.bg};color:${d.fg}"><i>${d.icon}</i>${d.name}</div>`).join("");
+  $("dimList").innerHTML = DIMS.map((d) => `<div class="dim" style="background:${d.tint}"><i>${d.icon}</i>${d.name}</div>`).join("");
   $("scaleTable").innerHTML = SCALE.map((s) => `<div><b>${s.v}</b>${s.t}</div>`).join("");
-  $("segs").innerHTML = "<i></i>".repeat(24);
-  $("digits").innerHTML = "<i></i>".repeat(8);
+  $("qDots").innerHTML = "<span></span>".repeat(24);
 
   // ============ REGISTER ============
   const empInput = $("empId");
   empInput.addEventListener("input", () => {
     empInput.value = empInput.value.replace(/\D/g, "").slice(0, 8);
-    $("digits").querySelectorAll("i").forEach((d, k) => d.classList.toggle("on", k < empInput.value.length));
     $("startBtn").disabled = !/^\d{8}$/.test(empInput.value);
     empInput.classList.remove("invalid");
     $("empErr").textContent = "";
@@ -484,36 +521,42 @@
     state.answers.fill(null);
     state.idx = 0;
     logToSheet({ action: "start", sessionId: state.sessionId, employeeId: state.empId });
-    go("s-quiz");
     renderQ();
+    go("s-quiz");
   });
 
   // ============ QUIZ ============
-  function paintProgress() {
-    $("segs").querySelectorAll("i").forEach((s, k) => s.classList.toggle("done", state.answers[k] !== null));
+  function paintDots() {
+    $("qDots").querySelectorAll("span").forEach((s, k) => {
+      s.classList.toggle("done", state.answers[k] !== null);
+      s.classList.toggle("now", k === state.idx);
+    });
     $("submitBtn").style.display = state.answers.every((a) => a !== null) ? "" : "none";
   }
+
   function renderQ() {
     const i = state.idx;
     const d = DIMS[Math.floor(i / 4)];
-    setTheme(d.bg, d.fg);
     $("qCount").textContent = `${i + 1} / 24`;
     $("prevBtn").disabled = i === 0;
-    $("qDim").textContent = `${d.icon} ${d.name}`;
-    $("qBig").textContent = String(i + 1).padStart(2, "0");
+    const qd = $("qDim");
+    qd.textContent = `${d.icon} ${d.name}`;
+    qd.style.background = d.tint;
+    $("quizCard").style.setProperty("--pop", d.color);
     $("qText").textContent = QUESTIONS[i];
-    $("qOpts").innerHTML = SCALE.map((s) =>
-      `<button class="opt${state.answers[i] === s.v ? " sel" : ""}" data-v="${s.v}"><span>${s.t}</span><span class="pts">${s.v}</span></button>`).join("");
+    $("qOpts").innerHTML = SCALE.map((s, k) =>
+      `<button class="opt${state.answers[i] === s.v ? " sel" : ""}" data-v="${s.v}"><span class="box"><svg><use href="#tick"/></svg></span>${s.t}<kbd>${k + 1}</kbd></button>`).join("");
     const body = $("qBody");
     body.classList.remove("qanim"); void body.offsetWidth; body.classList.add("qanim");
-    paintProgress();
+    paintDots();
   }
+
   $("qOpts").addEventListener("click", (e) => {
     const b = e.target.closest(".opt");
     if (!b) return;
     state.answers[state.idx] = Number(b.dataset.v);
     $("qOpts").querySelectorAll(".opt").forEach((o) => o.classList.toggle("sel", o === b));
-    paintProgress();
+    paintDots();
     clearTimeout(state.t);
     state.t = setTimeout(() => {
       const next = state.answers.findIndex((a, k) => a === null && k > state.idx);
@@ -521,8 +564,7 @@
       if (next !== -1) { state.idx = next; renderQ(); }
       else if (firstEmpty !== -1) { state.idx = firstEmpty; renderQ(); }
       else if (state.idx < 23) { state.idx++; renderQ(); }
-      else $("submitBtn").scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 330);
+    }, 320);
   });
   $("prevBtn").addEventListener("click", () => { if (state.idx > 0) { clearTimeout(state.t); state.idx--; renderQ(); } });
   document.addEventListener("keydown", (e) => {
@@ -533,23 +575,6 @@
   });
 
   // ============ RESULT ============
-  const io = new IntersectionObserver((entries) => entries.forEach((en) => {
-    if (!en.isIntersecting) return;
-    en.target.classList.add("in");
-    en.target.querySelectorAll(".bar-fill").forEach((b) => (b.style.width = b.dataset.w + "%"));
-    io.unobserve(en.target);
-  }), { threshold: 0.2 });
-
-  function countUp(el, to) {
-    const t0 = performance.now(), dur = 1100;
-    const tick = (t) => {
-      const p = Math.min(1, (t - t0) / dur);
-      el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
-      if (p < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }
-
   $("submitBtn").addEventListener("click", () => {
     if (state.answers.some((a) => a === null)) return;
     const dimScores = DIMS.map((_, k) => state.answers.slice(k * 4, k * 4 + 4).reduce((a, b) => a + b, 0));
@@ -560,41 +585,51 @@
     // เลือกมิติสูงสุด/ต่ำสุดเพียง 1 มิติ (หากคะแนนเท่ากัน เลือกตามลำดับมิติ)
     let hi = 0, lo = 0;
     pct.forEach((p, k) => { if (p > pct[hi]) hi = k; if (p < pct[lo]) lo = k; });
-    if (hi === lo) lo = DIMS.length - 1; // กรณีทุกมิติคะแนนเท่ากัน
+    if (hi === lo) lo = DIMS.length - 1; // กรณีทุกมิติคะแนนเท่ากัน ไม่ให้แสดงมิติเดียวกันทั้งสองช่อง
 
     state.result = { pct, total, mode, hi, lo };
-
-    const ms = $("modeSlide");
-    ms.style.background = mode.bg; ms.style.color = "#19226c";
-    $("rEmoji").textContent = mode.emoji;
+    $("rModeCard").style.background = mode.bg;
+    $("rArt").innerHTML = ART[mode.art];
     $("rMode").textContent = mode.name;
     $("rDesc").textContent = mode.desc;
+    $("rPairHi").textContent = `${DIMS[hi].icon} ${DIMS[hi].name}`;
+    $("rPairLo").textContent = `${DIMS[lo].icon} ${DIMS[lo].name}`;
 
     $("rBars").innerHTML = DIMS.map((d, k) => `
       <div class="bar-row">
-        <div class="lbl"><span>${d.icon} ${d.name}</span><b style="color:${d.bg}">${pct[k]}%</b></div>
-        <div class="bar-track"><div class="bar-fill" style="background:${d.bg}" data-w="${pct[k]}"></div></div>
+        <div class="lbl"><span>${d.icon} ${d.name}</span><b>${pct[k]}%</b></div>
+        <div class="bar-track"><div class="bar-fill${pct[k] === 0 ? " zero" : ""}" style="background:${d.color}" data-w="${pct[k]}"></div></div>
       </div>`).join("");
 
     const S = DIMS[hi], G = DIMS[lo];
-    const ss = $("strSlide"); ss.style.background = S.bg; ss.style.color = S.fg;
-    $("rStrIc").textContent = S.icon; $("rStrDim").textContent = S.name;
+    $("rStrIc").textContent = S.icon; $("rStrIc").style.background = S.tint;
     $("rStrTitle").textContent = S.strong[0]; $("rStrText").textContent = S.strong[1];
-    $("rGrowIc").textContent = G.icon; $("rGrowDim").textContent = G.name;
+    $("rGrowIc").textContent = G.icon; $("rGrowIc").style.background = G.tint;
     $("rGrowTitle").textContent = G.grow[0]; $("rGrowText").textContent = G.grow[1];
+    $("rStrCard").style.setProperty("--pop", S.color);
+    $("rGrowCard").style.setProperty("--pop", G.color);
 
-    document.querySelectorAll(".slide").forEach((s) => { s.classList.remove("in"); s.querySelectorAll(".bar-fill").forEach((b) => (b.style.width = 0)); io.observe(s); });
     go("s-result");
     countUp($("rScore"), total);
+    setTimeout(() => document.querySelectorAll(".bar-fill").forEach((b) => (b.style.width = b.dataset.w + "%")), 250);
 
     const st = $("sendStatus");
     logToSheet({ action: "submit", sessionId: state.sessionId, employeeId: state.empId, totalScore: total, overallMode: mode.name })
-      .then((r) => { st.textContent = r === true ? "✓ บันทึกการเข้าร่วมกิจกรรมเรียบร้อยแล้ว" : r === false ? "ไม่สามารถบันทึกข้อมูลได้ในขณะนี้" : ""; });
+      .then((r) => { st.textContent = r === true ? "บันทึกการเข้าร่วมกิจกรรมเรียบร้อยแล้ว" : r === false ? "ไม่สามารถบันทึกข้อมูลได้ในขณะนี้" : ""; });
   });
 
-  $("againBtn").addEventListener("click", () => { empInput.value = ""; empInput.dispatchEvent(new Event("input")); go("s-register"); });
+  function countUp(el, to) {
+    const t0 = performance.now(), dur = 1000;
+    const tick = (t) => {
+      const p = Math.min(1, (t - t0) / dur);
+      el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
 
   // ============ บันทึกผลลัพธ์เป็นรูปภาพ (1080×1920 ขนาด Story) ============
+  const NAVY = "#19226c";
   const seg = typeof Intl !== "undefined" && Intl.Segmenter ? new Intl.Segmenter("th", { granularity: "word" }) : null;
   function wrapLines(ctx, text, maxW) {
     const words = seg ? [...seg.segment(text)].map((s) => s.segment) : text.split(/(\s+)/);
@@ -607,97 +642,108 @@
     if (line.trim()) lines.push(line.trim());
     return lines;
   }
-  function roundRect(ctx, x, y, w, h, r, fill) {
-    ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); ctx.fillStyle = fill; ctx.fill();
+  function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, h, r) : ctx.rect(x, y, w, h); }
+  // การ์ดสไตล์สติกเกอร์: เงาสีทึบ + ขอบน้ำเงินเข้ม
+  function sticker(ctx, x, y, w, h, r, fill, shadow, off = 14) {
+    rr(ctx, x + off, y + off, w, h, r); ctx.fillStyle = shadow; ctx.fill();
+    rr(ctx, x, y, w, h, r); ctx.fillStyle = fill; ctx.fill();
+    ctx.lineWidth = 5; ctx.strokeStyle = NAVY; ctx.stroke();
   }
-  function star(ctx, cx, cy, r, fill) {
-    ctx.beginPath();
-    for (let k = 0; k < 24; k++) {
-      const a = (Math.PI * 2 * k) / 24, rr = k % 2 ? r * 0.72 : r;
-      ctx.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr);
-    }
-    ctx.closePath(); ctx.fillStyle = fill; ctx.fill();
+  function svgImage(svg, size) {
+    const src = svg
+      .replace('<svg class="mode-art"', `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"`)
+      .replaceAll("var(--line)", NAVY).replaceAll("var(--d2)", "#7b61ff").replaceAll("var(--d5s)", "#ffd3e6").replaceAll("var(--card)", "#ffffff");
+    return new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(src); });
   }
 
   async function buildImage() {
     const { pct, total, mode, hi, lo } = state.result;
-    await Promise.all(["900", "700", "500", "400"].map((w) => document.fonts.load(`${w} 40px Kanit`, "กขคABC")));
-    const W = 1080, H = 1920, P = 80;
+    await Promise.all([document.fonts.load("40px Itim", "กขABC"), document.fonts.load("500 40px Mali", "กขABC"), document.fonts.load("700 40px Mali", "กขABC")]);
+    const art = await svgImage(ART[mode.art], 190).catch(() => null);
+    const W = 1080, H = 1920, P = 80, CW = W - P * 2;
     const c = document.createElement("canvas"); c.width = W; c.height = H;
     const ctx = c.getContext("2d");
-    const F = (w, s) => `${w} ${s}px Kanit, sans-serif`;
-    ctx.textBaseline = "alphabetic";
+    const itim = (s) => `${s}px Itim, sans-serif`;
+    const mali = (w, s) => `${w} ${s}px Mali, sans-serif`;
 
-    // พื้นหลัง + รูปทรง
-    ctx.fillStyle = "#19226c"; ctx.fillRect(0, 0, W, H);
-    star(ctx, W - 60, 120, 190, "#01a5dc");
-    ctx.beginPath(); ctx.arc(40, H + 30, 150, 0, Math.PI * 2); ctx.fillStyle = "#ff5fa2"; ctx.fill();
-    ctx.strokeStyle = "#c8f53c"; ctx.lineWidth = 18; ctx.lineCap = "round"; ctx.beginPath();
-    for (let x = 0; x <= 260; x += 4) ctx.lineTo(W - 330 + x, H - 120 + Math.sin(x / 20) * 18); ctx.stroke();
+    // พื้นน้ำเงินเข้มลายจุด
+    ctx.fillStyle = NAVY; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#2a3590";
+    for (let yy = 16; yy < H; yy += 34) for (let xx = 16; xx < W; xx += 34) { ctx.beginPath(); ctx.arc(xx, yy, 2.4, 0, Math.PI * 2); ctx.fill(); }
+
+    // วัดความสูงก่อน เพื่อจัดกึ่งกลางแนวตั้ง
+    ctx.font = itim(92);
+    const modeLines = wrapLines(ctx, mode.name, CW - 100);
+    const boxH = 520 + (modeLines.length - 1) * 96;
+    const barsH = 570, pairH = 200;
+    const totalH = 150 + boxH + 60 + barsH + 50 + pairH + 70 + 30;
+    let y = Math.max(40, (H - totalH) / 2);
 
     // หัว
-    ctx.fillStyle = "#01a5dc"; ctx.font = F(700, 34); ctx.fillText("MY WELL-BEING PROFILE", P, 130);
-    ctx.fillStyle = "#ffffff"; ctx.font = F(400, 30); ctx.fillText("Mental Wellness Check-In · World Mental Health Day", P, 178);
+    ctx.save(); ctx.translate(P, y); ctx.rotate(-0.03);
+    rr(ctx, 0, 0, 470, 62, 10); ctx.fillStyle = "#ffd23f"; ctx.fill();
+    ctx.setLineDash([10, 7]); ctx.lineWidth = 3; ctx.strokeStyle = NAVY; ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = NAVY; ctx.font = mali(700, 30); ctx.fillText("MY WELL-BEING PROFILE", 26, 43);
+    ctx.restore();
+    ctx.fillStyle = "#ffffff"; ctx.font = mali(500, 30); ctx.fillText("Mental Wellness Check-In · World Mental Health Day", P, y + 125);
+    y += 150;
 
-    // กล่องโหมด
-    let y = 230;
-    ctx.font = F(900, 92);
-    const modeLines = wrapLines(ctx, mode.name, W - P * 2 - 80);
-    const boxH = 520 + (modeLines.length - 1) * 96;
-    roundRect(ctx, P, y, W - P * 2, boxH, 48, mode.bg);
-    ctx.fillStyle = "#19226c";
-    ctx.font = F(500, 36); ctx.fillText("ช่วงนี้ฉันอยู่ในโหมด", P + 50, y + 80);
-    ctx.font = "120px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
-    ctx.fillText(mode.emoji, P + 44, y + 215);
-    ctx.font = F(900, 88);
-    modeLines.forEach((l, k) => ctx.fillText(l, P + 50, y + 320 + k * 96));
-    const sy = y + 320 + (modeLines.length - 1) * 96 + 44;
-    roundRect(ctx, P + 50, sy, 380, 66, 33, "#19226c");
-    ctx.fillStyle = "#ffffff"; ctx.font = F(700, 34); ctx.fillText(`คะแนนรวม ${total} / 96`, P + 82, sy + 45);
-    y += boxH + 70;
+    // การ์ดโหมด
+    sticker(ctx, P, y, CW, boxH, 44, mode.bg, "#ffffff");
+    ctx.textAlign = "center"; ctx.fillStyle = NAVY;
+    ctx.font = mali(600, 36); ctx.fillText("ช่วงนี้ฉันอยู่ในโหมด", W / 2, y + 72);
+    if (art) ctx.drawImage(art, W / 2 - 95, y + 90, 190, 190);
+    ctx.font = itim(92);
+    modeLines.forEach((l, k) => ctx.fillText(l, W / 2, y + 370 + k * 96));
+    const sy = y + 370 + (modeLines.length - 1) * 96 + 36;
+    ctx.font = itim(44);
+    const sText = `คะแนนรวม ${total} / 96`, sw = ctx.measureText(sText).width + 70;
+    sticker(ctx, W / 2 - sw / 2, sy, sw, 76, 18, "#ffffff", NAVY, 6);
+    ctx.fillStyle = NAVY; ctx.fillText(sText, W / 2, sy + 54);
+    ctx.textAlign = "left";
+    y += boxH + 60;
 
-    // แท่ง 6 มิติ
-    ctx.fillStyle = "#ffffff"; ctx.font = F(800, 44); ctx.fillText("6 มิติสุขภาวะของฉัน", P, y); y += 40;
+    // 6 มิติ
+    sticker(ctx, P, y, CW, barsH, 44, "#ffffff", "#c8f53c");
+    ctx.fillStyle = NAVY; ctx.font = itim(48); ctx.fillText("6 มิติสุขภาวะของฉัน", P + 50, y + 82);
+    let by = y + 110;
     DIMS.forEach((d, k) => {
-      y += 44;
-      ctx.fillStyle = "#ffffff"; ctx.font = F(500, 32); ctx.textAlign = "left"; ctx.fillText(d.name, P, y);
-      ctx.fillStyle = d.bg; ctx.font = F(900, 40); ctx.textAlign = "right"; ctx.fillText(pct[k] + "%", W - P, y);
-      ctx.textAlign = "left";
-      y += 16;
-      roundRect(ctx, P, y, W - P * 2, 26, 13, "rgba(255,255,255,.14)");
-      if (pct[k] > 0) roundRect(ctx, P, y, Math.max(26, (W - P * 2) * pct[k] / 100), 26, 13, d.bg);
-      y += 28;
+      ctx.fillStyle = NAVY; ctx.font = mali(500, 29); ctx.fillText(d.name, P + 50, by + 32);
+      ctx.font = itim(38); ctx.textAlign = "right"; ctx.fillText(pct[k] + "%", W - P - 50, by + 34); ctx.textAlign = "left";
+      rr(ctx, P + 50, by + 46, CW - 100, 22, 11); ctx.fillStyle = "#eef1fb"; ctx.fill();
+      if (pct[k] > 0) { rr(ctx, P + 50, by + 46, Math.max(22, (CW - 100) * pct[k] / 100), 22, 11); ctx.fillStyle = DIM_HEX[k]; ctx.fill(); }
+      rr(ctx, P + 50, by + 46, CW - 100, 22, 11); ctx.lineWidth = 3; ctx.strokeStyle = NAVY; ctx.stroke();
+      by += 74;
     });
-    y += 60;
+    y += barsH + 50;
 
     // จุดเด่น / ควรเติมพลัง
-    const colW = (W - P * 2 - 30) / 2;
-    const cards = [
-      { tag: "🌟 จุดเด่นของฉัน", d: DIMS[hi], title: DIMS[hi].strong[0], bg: DIMS[hi].bg, fg: DIMS[hi].fg },
-      { tag: "💡 อยากเติมพลัง", d: DIMS[lo], title: DIMS[lo].grow[0], bg: "#ffffff", fg: "#19226c" },
-    ];
-    const cardH = 270;
-    cards.forEach((cd, k) => {
-      const x = P + k * (colW + 30);
-      roundRect(ctx, x, y, colW, cardH, 40, cd.bg);
-      ctx.fillStyle = cd.fg;
-      ctx.font = F(700, 28); ctx.fillText(cd.tag, x + 34, y + 60);
-      ctx.font = F(500, 26); ctx.fillText(cd.d.name, x + 34, y + 104);
-      ctx.font = F(800, 36);
-      wrapLines(ctx, cd.title, colW - 68).slice(0, 4).forEach((l, n) => ctx.fillText(l, x + 34, y + 170 + n * 46));
+    const colW = (CW - 40) / 2;
+    [
+      { tag: "🌟 จุดเด่นของฉัน", k: hi, title: DIMS[hi].strong[0], fill: DIM_SOFT[hi] },
+      { tag: "💡 อยากเติมพลัง", k: lo, title: DIMS[lo].grow[0], fill: "#ffffff" },
+    ].forEach((cd, n) => {
+      const x = P + n * (colW + 40);
+      sticker(ctx, x, y, colW, pairH, 34, cd.fill, DIM_HEX[cd.k], 10);
+      ctx.fillStyle = NAVY;
+      ctx.font = mali(700, 26); ctx.fillText(cd.tag, x + 30, y + 50);
+      ctx.font = mali(500, 23); ctx.fillText(DIMS[cd.k].name, x + 30, y + 86);
+      ctx.font = itim(33);
+      wrapLines(ctx, cd.title, colW - 60).slice(0, 2).forEach((l, i) => ctx.fillText(l, x + 30, y + 136 + i * 40));
     });
-    y += cardH + 62;
+    y += pairH + 70;
 
-    ctx.fillStyle = "rgba(255,255,255,.75)"; ctx.font = F(400, 26); ctx.textAlign = "center";
+    ctx.fillStyle = "#b8c0ef"; ctx.font = mali(500, 25); ctx.textAlign = "center";
     ctx.fillText("ผลลัพธ์นี้เป็นการสำรวจตนเองเบื้องต้น ไม่ใช่การวินิจฉัยทางการแพทย์", W / 2, y);
     ctx.textAlign = "left";
-
     return new Promise((res) => c.toBlob(res, "image/png"));
   }
+  const DIM_HEX = ["#01a5dc", "#7b61ff", "#7cc516", "#f5b400", "#ff4f93", "#ff7a2f"];
+  const DIM_SOFT = ["#c6effd", "#ded8ff", "#e4f9b0", "#fff0a8", "#ffd3e6", "#ffdcc6"];
 
   let shareFile = null, shareUrl = null;
   $("saveBtn").addEventListener("click", async () => {
-    const btn = $("saveBtn"); const old = btn.textContent;
+    const btn = $("saveBtn"), old = btn.textContent;
     btn.disabled = true; btn.textContent = "กำลังสร้างรูป...";
     try {
       const blob = await buildImage();
@@ -705,9 +751,9 @@
       shareUrl = URL.createObjectURL(blob);
       shareFile = new File([blob], "my-wellbeing-profile.png", { type: "image/png" });
       $("shareImg").src = shareUrl;
-      const canShare = navigator.canShare && navigator.canShare({ files: [shareFile] });
+      const canShare = !!(navigator.canShare && navigator.canShare({ files: [shareFile] }));
       $("shareBtn").style.display = canShare ? "" : "none";
-      $("modal").querySelector(".row").style.gridTemplateColumns = canShare ? "1fr 1fr" : "1fr";
+      $("modalRow").style.gridTemplateColumns = canShare ? "1fr 1fr" : "1fr";
       $("modal").classList.add("open");
     } finally { btn.disabled = false; btn.textContent = old; }
   });
@@ -715,7 +761,7 @@
     const a = document.createElement("a"); a.href = shareUrl; a.download = "my-wellbeing-profile.png";
     document.body.appendChild(a); a.click(); a.remove();
   });
-  $("shareBtn").addEventListener("click", () => { navigator.share({ files: [shareFile], title: "My Well-being Profile" }).catch(() => {}); });
+  $("shareBtn").addEventListener("click", () => navigator.share({ files: [shareFile], title: "My Well-being Profile" }).catch(() => {}));
   $("closeModal").addEventListener("click", () => $("modal").classList.remove("open"));
   $("modal").addEventListener("click", (e) => { if (e.target.id === "modal") $("modal").classList.remove("open"); });
 </script>
