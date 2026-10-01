@@ -118,7 +118,7 @@
   @media (max-width: 640px) { .dims { grid-template-columns: repeat(2, 1fr); } }
   .dim { display: flex; flex-direction: column; gap: 10px; padding: 18px 16px; border-radius: 20px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); font-weight: 700; font-size: 15px; line-height: 1.35; }
   .dim .ic { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; font-size: 22px; }
-  .dim small { font-weight: 500; color: var(--ink-faint); font-size: 12px; }
+  .dim small { font-weight: 500; color: var(--ink-soft); font-size: 13px; line-height: 1.5; }
 
   .scale { width: 100%; border-collapse: collapse; margin-top: 6px; }
   .scale th { font-size: 13px; color: var(--ink-faint); font-weight: 600; text-align: left; padding: 0 14px 8px; }
@@ -157,7 +157,7 @@
   .bar > div { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--cyan), var(--violet)); transition: width .4s ease; }
   .qcard { margin-top: 24px; }
   .qdim { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; padding: 5px 12px; border-radius: 999px; }
-  .qtext { font-size: clamp(21px, 5vw, 26px); font-weight: 700; line-height: 1.5; margin: 14px 0 22px; min-height: 2.6em; }
+  .qtext { font-size: clamp(21px, 5vw, 26px); font-weight: 700; line-height: 1.5; margin: 0 0 22px; min-height: 2.6em; }
   .qtext .req { color: #ef4b6c; margin-left: 4px; }
   .opts { display: grid; gap: 12px; }
   .opt {
@@ -192,6 +192,7 @@
 
   .bars { display: grid; gap: 16px; margin-top: 8px; }
   .bar-row .lbl { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 6px; font-weight: 600; }
+  .bar-row .lbl small { display: block; font-size: 13px; font-weight: 500; color: var(--ink-soft); margin-top: 1px; }
   .bar-row .lbl b { font-size: 20px; font-weight: 800; font-variant-numeric: tabular-nums; }
   .bar-track { height: 12px; border-radius: 999px; background: #edf0f8; overflow: hidden; }
   .bar-fill { height: 100%; width: 0; border-radius: inherit; transition: width 1.1s cubic-bezier(.2,.8,.2,1); }
@@ -307,7 +308,6 @@
     <div class="bar"><div id="qBar"></div></div>
     <div class="card qcard">
       <div id="qBody">
-        <span class="qdim" id="qDim"></span>
         <div class="qtext"><span id="qText"></span><span class="req">*</span></div>
         <div class="opts" id="qOpts"></div>
       </div>
@@ -499,22 +499,22 @@
   ];
 
   const DIMS = [
-    { icon: "🧠", name: "Emotional Balance", color: "#01a5dc", tint: "#e3f5fc", ink: "#0a7fae",
+    { icon: "🧠", name: "Emotional Balance", th: "การเข้าใจและจัดการอารมณ์ของตัวเอง", color: "#01a5dc", tint: "#e3f5fc", ink: "#0a7fae",
       strong: ["คุณเข้าใจอารมณ์ของตัวเองได้ดี", "คุณสามารถรับรู้ความรู้สึกของตัวเองและจัดการกับอารมณ์ต่าง ๆ ได้ค่อนข้างดี แม้อาจมีวันที่ไม่ง่าย แต่คุณมักกลับมาตั้งหลักและเดินหน้าต่อได้"],
       grow:   ["ลองฟังเสียงของตัวเองให้มากขึ้น", "ช่วงนี้อาจมีหลายเรื่องเข้ามาพร้อมกันจนไม่มีเวลาเช็กความรู้สึกของตัวเอง ลองหยุดสักนิดเพื่อสำรวจว่าในตอนนี้คุณกำลังรู้สึกอย่างไร"] },
-    { icon: "🌊", name: "Stress Management", color: "#7b61ff", tint: "#efeaff", ink: "#5a45d6",
+    { icon: "🌊", name: "Stress Management", th: "การรับมือกับความเครียดและแรงกดดัน", color: "#7b61ff", tint: "#efeaff", ink: "#5a45d6",
       strong: ["คุณรับมือกับแรงกดดันได้ดี", "เมื่อมีเรื่องให้กังวลหรือเครียด คุณสามารถจัดการกับสถานการณ์ต่าง ๆ ได้โดยไม่ปล่อยให้ความเครียดเข้ามาครอบงำชีวิตมากเกินไป"],
       grow:   ["ถึงเวลาพักจากความกังวลบ้าง", "คุณอาจกำลังแบกรับหลายเรื่องไว้พร้อมกัน ลองหาเวลาผ่อนคลายในแบบที่เหมาะกับตัวเอง และไม่จำเป็นต้องจัดการทุกเรื่องให้สมบูรณ์แบบเสมอไป"] },
-    { icon: "🌱", name: "Resilience", color: "#22c38e", tint: "#e2f7ef", ink: "#128a63",
+    { icon: "🌱", name: "Resilience", th: "การฟื้นตัวเมื่อเจออุปสรรค", color: "#22c38e", tint: "#e2f7ef", ink: "#128a63",
       strong: ["คุณล้มแล้วลุกได้เสมอ", "เมื่อเจออุปสรรคหรือเรื่องที่ไม่เป็นไปตามแผน คุณสามารถปรับตัว เรียนรู้ และกลับมาเดินหน้าต่อได้ ความสามารถนี้ช่วยให้คุณรับมือกับความเปลี่ยนแปลงได้ดี"],
       grow:   ["ค่อย ๆ ไปทีละก้าวก็ได้", "เมื่อเจอเรื่องยากหรือผิดหวัง อย่ากดดันตัวเองมากเกินไป การให้เวลากับตัวเองในการตั้งหลักก็เป็นส่วนหนึ่งของการก้าวไปข้างหน้าเช่นกัน"] },
-    { icon: "⚡", name: "Energy & Vitality", color: "#ffb31a", tint: "#fff4d6", ink: "#b57800",
+    { icon: "⚡", name: "Energy & Vitality", th: "พลังงานและความสดชื่นในแต่ละวัน", color: "#ffb31a", tint: "#fff4d6", ink: "#b57800",
       strong: ["คุณมีพลังพร้อมใช้ชีวิต", "ช่วงนี้คุณมีพลังงานทั้งทางกายและใจค่อนข้างดี ทำให้ยังมีแรงสำหรับสิ่งที่ต้องทำ รวมถึงสิ่งที่คุณอยากทำเพื่อความสุขของตัวเอง"],
       grow:   ["แบตเตอรี่ของคุณอาจต้องการการชาร์จเพิ่ม", "ช่วงนี้คุณอาจใช้พลังงานไปมากกว่าที่เติมกลับมา ลองให้ความสำคัญกับการพักผ่อน การนอนหลับ หรือกิจกรรมที่ช่วยให้รู้สึกสดชื่นขึ้น"] },
-    { icon: "🤝", name: "Social Connection", color: "#ff5fa2", tint: "#ffe7f1", ink: "#c7336f",
+    { icon: "🤝", name: "Social Connection", th: "ความสัมพันธ์และการได้รับการสนับสนุน", color: "#ff5fa2", tint: "#ffe7f1", ink: "#c7336f",
       strong: ["คุณมีคนรอบตัวที่เป็นพลังใจ", "คุณมีความสัมพันธ์ที่ดีและมีคนที่พร้อมรับฟัง สนับสนุน หรืออยู่ข้าง ๆ ในวันที่ต้องการ ทำให้คุณไม่ต้องรับมือกับทุกอย่างเพียงลำพัง"],
       grow:   ["ไม่จำเป็นต้องรับมือทุกอย่างคนเดียว", "บางครั้งการพูดคุยหรือขอความช่วยเหลือจากคนที่ไว้ใจ อาจช่วยแบ่งเบาความรู้สึกได้มากกว่าที่คิด ลองเปิดพื้นที่ให้ตัวเองได้เชื่อมโยงกับคนรอบข้างมากขึ้น"] },
-    { icon: "🎯", name: "Meaning & Positive Mindset", color: "#ff8a3d", tint: "#ffede1", ink: "#c85a14",
+    { icon: "🎯", name: "Meaning & Positive Mindset", th: "ความหมาย ความหวัง และมุมมองเชิงบวก", color: "#ff8a3d", tint: "#ffede1", ink: "#c85a14",
       strong: ["คุณยังมองเห็นความหมายและความหวัง", "คุณมองเห็นคุณค่าของสิ่งที่ทำ และยังมีสิ่งที่ตั้งตารอหรืออยากทำต่อไป มุมมองแบบนี้ช่วยสร้างพลังใจให้กับชีวิตในแต่ละวัน"],
       grow:   ["ลองกลับมามองหาสิ่งที่ทำให้ใจมีพลัง", "ช่วงนี้คุณอาจกำลังโฟกัสกับเรื่องที่ต้องทำจนลืมสิ่งที่ทำให้รู้สึกตื่นเต้นหรือมีความหมาย ลองหาเวลาทำสิ่งที่ชอบ หรือกลับไปหาสิ่งที่เคยสร้างแรงบันดาลใจให้ตัวเอง"] },
   ];
@@ -586,7 +586,7 @@
   $("artTired").innerHTML = ART.tired;
   $("artReg").innerHTML = ART.pause;
   $("dimList").innerHTML = DIMS.map((d, k) =>
-    `<div class="dim"><div class="ic" style="background:${d.tint}">${d.icon}</div>${d.name}<small>ข้อ ${k * 4 + 1}–${k * 4 + 4}</small></div>`).join("");
+    `<div class="dim"><div class="ic" style="background:${d.tint}">${d.icon}</div>${d.name}<small>${d.th}</small></div>`).join("");
   $("scaleTable").innerHTML = `<tr><th>คะแนน</th><th>คำตอบ</th></tr>` +
     SCALE.map((s) => `<tr><td><span class="num" style="background:${s.c}">${s.v}</span></td><td>${s.t}</td></tr>`).join("");
 
@@ -627,9 +627,6 @@
   }
   function renderQ() {
     const i = state.idx, d = DIMS[Math.floor(i / 4)];
-    const qd = $("qDim");
-    qd.textContent = `${d.icon} ${d.name} · ข้อ ${i + 1}`;
-    qd.style.background = d.tint; qd.style.color = d.ink;
     $("qText").textContent = QUESTIONS[i];
     $("qOpts").innerHTML = SCALE.map((s) =>
       `<button class="opt${state.answers[i] === s.v ? " sel" : ""}" data-v="${s.v}"><span class="radio"></span>${s.t}</button>`).join("");
@@ -702,7 +699,7 @@
 
     $("rBars").innerHTML = DIMS.map((d, k) => `
       <div class="bar-row">
-        <div class="lbl"><span>${d.icon} ${d.name}</span><b style="color:${d.ink}">${pct[k]}%</b></div>
+        <div class="lbl"><span>${d.icon} ${d.name}<small>${d.th}</small></span><b style="color:${d.ink}">${pct[k]}%</b></div>
         <div class="bar-track"><div class="bar-fill" style="background:${d.color}" data-w="${pct[k]}"></div></div>
       </div>`).join("");
 
@@ -768,12 +765,12 @@
     sparkleC(ctx, 980, 110, 2.2, "#01a5dc"); sparkleC(ctx, 90, 420, 1.8, "#a896ff"); sparkleC(ctx, 1000, 1500, 1.6, "#ffb14a");
 
     // วัดความสูง
-    ctx.font = F(800, 76);
+    ctx.font = F(800, 72);
     const modeLines = wrapLines(ctx, mode.name, CW - 120);
-    const heroH = 700 + (modeLines.length - 1) * 92;
-    const barsH = 600, pairH = 220;
-    const totalH = 170 + heroH + 40 + barsH + 40 + pairH + 80;
-    let y = Math.max(50, (H - totalH) / 2);
+    const heroH = 640 + (modeLines.length - 1) * 86;
+    const barsH = 112 + 6 * 94 + 14, pairH = 200;
+    const totalH = 170 + heroH + 32 + barsH + 32 + pairH + 64;
+    let y = Math.max(24, (H - totalH) / 2);
 
     // หัว
     ctx.textAlign = "center";
@@ -781,29 +778,29 @@
     const tag = "💙 Mental Wellness Check-In", tw = ctx.measureText(tag).width + 60;
     rr(ctx, W / 2 - tw / 2, y, tw, 64, 32); ctx.fillStyle = "#ffffff"; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = "#e3e7f3"; ctx.stroke();
     ctx.fillStyle = NAVY; ctx.fillText(tag, W / 2, y + 43);
-    ctx.font = F(800, 58); ctx.fillText("My Well-being Profile", W / 2, y + 150);
-    y += 190;
+    ctx.font = F(800, 58); ctx.fillText("My Well-being Profile", W / 2, y + 136);
+    y += 170;
 
     // การ์ดโหมด
     card(ctx, P, y, CW, heroH, 48);
-    const cx = W / 2, cy = y + 190, R = 140;
+    const cx = W / 2, cy = y + 168, R = 122;
     ctx.save(); ctx.shadowColor = "rgba(25,34,108,.25)"; ctx.shadowBlur = 30; ctx.shadowOffsetY = 12;
     ctx.beginPath(); ctx.arc(cx, cy, R + 10, 0, Math.PI * 2); ctx.fillStyle = "#fff"; ctx.fill(); ctx.restore();
     ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = mode.tint; ctx.fill(); ctx.clip();
     if (art) ctx.drawImage(art, cx - R, cy - R, R * 2, R * 2);
     ctx.restore();
-    ctx.fillStyle = "#545c8c"; ctx.font = F(600, 34); ctx.fillText("ช่วงนี้ฉันอยู่ในโหมด", W / 2, y + 400);
+    ctx.fillStyle = "#545c8c"; ctx.font = F(600, 34); ctx.fillText("ช่วงนี้ฉันอยู่ในโหมด", W / 2, y + 358);
     const grad = ctx.createLinearGradient(P + 80, 0, W - P - 80, 0);
     grad.addColorStop(0, "#01a5dc"); grad.addColorStop(.55, "#7b61ff"); grad.addColorStop(1, "#ff5fa2");
-    ctx.fillStyle = grad; ctx.font = F(800, 76);
-    modeLines.forEach((l, k) => ctx.fillText(l, W / 2, y + 490 + k * 92));
-    const sy = y + 490 + (modeLines.length - 1) * 92 + 50;
+    ctx.fillStyle = grad; ctx.font = F(800, 72);
+    modeLines.forEach((l, k) => ctx.fillText(l, W / 2, y + 446 + k * 86));
+    const sy = y + 446 + (modeLines.length - 1) * 86 + 44;
     ctx.font = F(700, 38);
     const sText = `คะแนนรวม ${total} / 96`, sw = ctx.measureText(sText).width + 80;
     rr(ctx, W / 2 - sw / 2, sy, sw, 80, 40); ctx.fillStyle = NAVY; ctx.fill();
     ctx.fillStyle = "#fff"; ctx.fillText(sText, W / 2, sy + 54);
     ctx.textAlign = "left";
-    y += heroH + 40;
+    y += heroH + 32;
 
     // 6 มิติ
     card(ctx, P, y, CW, barsH, 44);
@@ -812,11 +809,12 @@
     DIMS.forEach((d, k) => {
       ctx.fillStyle = NAVY; ctx.font = F(600, 29); ctx.fillText(d.name, P + 50, by + 30);
       ctx.fillStyle = d.ink; ctx.font = F(800, 34); ctx.textAlign = "right"; ctx.fillText(pct[k] + "%", W - P - 50, by + 32); ctx.textAlign = "left";
-      rr(ctx, P + 50, by + 46, CW - 100, 20, 10); ctx.fillStyle = "#edf0f8"; ctx.fill();
-      if (pct[k] > 0) { rr(ctx, P + 50, by + 46, Math.max(20, (CW - 100) * pct[k] / 100), 20, 10); ctx.fillStyle = d.color; ctx.fill(); }
-      by += 78;
+      ctx.fillStyle = "#6b7299"; ctx.font = F(500, 22); ctx.fillText(d.th, P + 50, by + 60);
+      rr(ctx, P + 50, by + 72, CW - 100, 16, 8); ctx.fillStyle = "#edf0f8"; ctx.fill();
+      if (pct[k] > 0) { rr(ctx, P + 50, by + 72, Math.max(16, (CW - 100) * pct[k] / 100), 16, 8); ctx.fillStyle = d.color; ctx.fill(); }
+      by += 94;
     });
-    y += barsH + 40;
+    y += barsH + 32;
 
     // จุดเด่น / ควรเติมพลัง
     const colW = (CW - 30) / 2;
@@ -831,7 +829,7 @@
       ctx.fillStyle = NAVY; ctx.font = F(800, 31);
       wrapLines(ctx, cd.title, colW - 68).slice(0, 2).forEach((l, i) => ctx.fillText(l, x + 34, y + 146 + i * 42));
     });
-    y += pairH + 70;
+    y += pairH + 60;
 
     ctx.fillStyle = "#9aa0c3"; ctx.font = F(500, 24); ctx.textAlign = "center";
     ctx.fillText("ผลลัพธ์นี้เป็นการสำรวจตนเองเบื้องต้น ไม่ใช่การวินิจฉัยทางการแพทย์", W / 2, y);
